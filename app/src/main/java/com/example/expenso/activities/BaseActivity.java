@@ -7,10 +7,16 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.work.ExistingPeriodicWorkPolicy;
+import androidx.work.PeriodicWorkRequest;
+import androidx.work.WorkManager;
 
+import com.example.expenso.utils.NotificationHelper;
 import com.example.expenso.utils.PinManager;
+import com.example.expenso.workers.SmartRemindersWorker;
 
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 
 /**
  * BaseActivity — Handles global language settings and common UI logic.
@@ -26,6 +32,22 @@ public abstract class BaseActivity extends AppCompatActivity {
         // Apply saved locale before onCreate
         applyLocale();
         super.onCreate(savedInstanceState);
+
+        // Setup Smart Notifications
+        NotificationHelper.createNotificationChannel(this);
+        schedulePeriodicReminders();
+    }
+
+    private void schedulePeriodicReminders() {
+        PeriodicWorkRequest reminderRequest = new PeriodicWorkRequest.Builder(
+                SmartRemindersWorker.class, 24, TimeUnit.HOURS)
+                .build();
+
+        WorkManager.getInstance(this).enqueueUniquePeriodicWork(
+                "expenso_daily_reminders",
+                ExistingPeriodicWorkPolicy.KEEP,
+                reminderRequest
+        );
     }
 
     @Override

@@ -71,6 +71,17 @@ public class ExpenseDao {
         return total;
     }
 
+    public double getAverageExpense(int userId) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.rawQuery("SELECT AVG(amount) FROM Expenses WHERE user_id = ?", new String[]{String.valueOf(userId)});
+        double average = 0;
+        if (cursor != null && cursor.moveToFirst()) {
+            average = cursor.getDouble(0);
+        }
+        if (cursor != null) cursor.close();
+        return average;
+    }
+
     public Map<String, Double> getCategorySpending(int userId) {
         Map<String, Double> categorySpending = new HashMap<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();

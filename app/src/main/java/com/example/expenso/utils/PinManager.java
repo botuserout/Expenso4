@@ -117,4 +117,12 @@ public class PinManager {
     public String getLanguage() {
         return prefs.getString(LANGUAGE_KEY, "en"); // Default to English
     }
+
+    public boolean isNotificationsEnabled() {
+        return prefs.getBoolean("notifications_enabled", true);
+    }
+
+    public void setNotificationsEnabled(boolean enabled) {
+        prefs.edit().putBoolean("notifications_enabled", enabled).apply();
+    }
 }

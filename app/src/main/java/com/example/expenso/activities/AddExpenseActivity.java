@@ -23,6 +23,8 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.expenso.R;
 import com.example.expenso.database.ExpenseDao;
 import com.example.expenso.models.Expense;
+import com.example.expenso.utils.PinManager;
+import com.example.expenso.utils.SmartNotificationManager;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
@@ -345,6 +347,9 @@ public class AddExpenseActivity extends BaseActivity {
 
                         // Clear form
                         clearForm();
+                        
+                        // Smart Notifications Trigger
+                        SmartNotificationManager.checkAndTriggerSmartAlert(this, amount, selectedCategoryName);
                     } else {
                         Toast.makeText(this, "Failed to add expense. Please try again.", Toast.LENGTH_SHORT).show();
                     }

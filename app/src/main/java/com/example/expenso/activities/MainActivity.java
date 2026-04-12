@@ -4,13 +4,22 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Intent;
 import android.content.res.ColorStateList;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.view.View;
 import android.view.animation.DecelerateInterpolator;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import androidx.core.content.ContextCompat;
+
+import com.github.mikephil.charting.charts.LineChart;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -23,13 +32,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.expenso.R;
 import com.example.expenso.adapters.ExpenseAdapter;
 import com.example.expenso.database.ExpenseDao;
+import com.example.expenso.database.GoalDao;
 import com.example.expenso.models.Expense;
+import com.example.expenso.models.Goal;
 import com.example.expenso.utils.PinManager;
 import com.example.expenso.utils.UserProfileManager;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.List;
+import java.util.Map;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends BaseActivity {
 
@@ -40,10 +54,20 @@ public class MainActivity extends BaseActivity {
     private LinearLayout budgetWarningsContainer, budgetWarningCard;
     private TextView totalBalanceText, incomeText, expensesText, savingsText, tvGreeting,
             tvOwed, tvOwe;
+    private ImageView ivDashboardAvatar;
     
     // Meter Views
     private ProgressBar circularProgressBar;
     private TextView tvMeterPercent, tvMeterDetail, tvMeterRemaining;
+
+    // Trend Views
+    private LineChart balanceTrendChart;
+    private TextView tvTodayBalance, tvBalanceDiff;
+
+    // Goals Preview
+    private TextView tvTopGoalName;
+    private ProgressBar pbTopGoal;
+    private LinearLayout cardGoalsPreview;
 
     private BottomNavigationView bottomNavigationView;
 
@@ -87,14 +111,29 @@ public class MainActivity extends BaseActivity {
         expensesText = findViewById(R.id.expenses_amount);
         savingsText = findViewById(R.id.savings_amount);
         tvGreeting = findViewById(R.id.tv_greeting);
+        ivDashboardAvatar = findViewById(R.id.iv_dashboard_avatar);
         tvOwed = findViewById(R.id.tv_owed_amount);
         tvOwe = findViewById(R.id.tv_owe_amount);
+        
+        findViewById(R.id.layout_profile_header).setOnClickListener(v -> 
+                startActivity(new Intent(this, UserProfileActivity.class)));
         
         // Meter
         circularProgressBar = findViewById(R.id.budget_circular_progress);
         tvMeterPercent = findViewById(R.id.tv_meter_percent);
         tvMeterDetail = findViewById(R.id.tv_meter_detail);
         tvMeterRemaining = findViewById(R.id.tv_meter_remaining);
+
+        // Trend
+        balanceTrendChart = findViewById(R.id.balance_trend_chart);
+        tvTodayBalance = findViewById(R.id.tv_today_balance);
+        tvBalanceDiff = findViewById(R.id.tv_balance_diff);
+
+        // Goals Preview
+        tvTopGoalName = findViewById(R.id.tv_top_goal_name);
+        pbTopGoal = findViewById(R.id.pb_top_goal);
+        cardGoalsPreview = findViewById(R.id.card_goals_preview);
+        cardGoalsPreview.setOnClickListener(v -> startActivity(new Intent(this, GoalsActivity.class)));
 
         bottomNavigationView = findViewById(R.id.bottom_navigation);
 
@@ -183,8 +222,120 @@ public class MainActivity extends BaseActivity {
 
                 // Update Budget Meter
                 updateBudgetMeter(realSpending, totalBudget);
+                
+                // Fetch Daily Spending and setup Chart
+                new Thread(() -> {
+                    Map<String, Double> dailyData = expenseDao.getDailySpending(userId);
+                    runOnUiThread(() -> setupBalanceTrend(totalBudget, dailyData));
+                }).start();
+
+                // Fetch Top Goal Preview
+                new Thread(() -> {
+                    GoalDao goalDao = new GoalDao(this);
+                    List<Goal> goals = goalDao.getAllGoals(userId);
+                    if (!goals.isEmpty()) {
+                        Goal topGoal = goals.get(0);
+                        runOnUiThread(() -> {
+                            tvTopGoalName.setText(topGoal.getIcon() + " " + topGoal.getName() + ": " + topGoal.getProgress() + "%");
+                            pbTopGoal.setProgress(topGoal.getProgress());
+                        });
+                    }
+                }).start();
             });
         }).start();
+    }
+
+    private void setupBalanceTrend(double totalBudget, Map<String, Double> dailySpending) {
+        if (dailySpending.isEmpty() || totalBudget <= 0) {
+            balanceTrendChart.setNoDataText("Add expenses to see trend");
+            balanceTrendChart.invalidate();
+            return;
+        }
+
+        List<Entry> entries = new java.util.ArrayList<>();
+        final List<String> dateList = new java.util.ArrayList<>();
+        
+        double cumulativeSpent = 0;
+        int index = 0;
+        double currentBalance = totalBudget;
+        double yesterdayBalance = totalBudget;
+
+        for (Map.Entry<String, Double> entry : dailySpending.entrySet()) {
+            yesterdayBalance = currentBalance;
+            cumulativeSpent += entry.getValue();
+            currentBalance = totalBudget - cumulativeSpent;
+            
+            entries.add(new Entry(index, (float) currentBalance));
+            
+            // Format date to dd/MM
+            String date = entry.getKey();
+            try {
+                java.util.Date d = new java.text.SimpleDateFormat("yyyy-MM-dd").parse(date);
+                dateList.add(new java.text.SimpleDateFormat("dd/MM").format(d));
+            } catch (Exception e) {
+                dateList.add(date);
+            }
+            index++;
+        }
+
+        tvTodayBalance.setText(String.format("Today: ₹%.0f", currentBalance));
+        tvTodayBalance.setTextColor(ContextCompat.getColor(this, currentBalance >= 0 ? R.color.income_green : R.color.expense_red));
+        
+        // Calculate Trend Delta
+        if (dailySpending.size() >= 1) {
+            // If only one day, compare with totalBudget (the starting point)
+            double baseline = (dailySpending.size() > 1) ? yesterdayBalance : totalBudget;
+            double diff = currentBalance - baseline;
+            
+            if (baseline != 0) {
+                double percent = (Math.abs(diff) / baseline) * 100;
+                String sign = diff >= 0 ? "▲ +" : "▼ -";
+                tvBalanceDiff.setText(String.format("%s%.1f%% vs previous", sign, percent));
+                tvBalanceDiff.setTextColor(ContextCompat.getColor(this, diff >= 0 ? R.color.income_green : R.color.expense_red));
+            } else {
+                tvBalanceDiff.setText("Balance initialized");
+            }
+        }
+
+        LineDataSet dataSet = new LineDataSet(entries, "Remaining Balance");
+        dataSet.setColor(ContextCompat.getColor(this, R.color.primary_color));
+        dataSet.setLineWidth(3f);
+        dataSet.setDrawCircles(true);
+        dataSet.setCircleColor(ContextCompat.getColor(this, R.color.primary_color));
+        dataSet.setCircleRadius(5f);
+        dataSet.setDrawValues(false);
+        dataSet.setMode(LineDataSet.Mode.CUBIC_BEZIER); // Smooth curves
+        dataSet.setDrawFilled(true);
+        dataSet.setFillColor(ContextCompat.getColor(this, R.color.primary_light));
+        dataSet.setFillAlpha(50);
+
+        LineData lineData = new LineData(dataSet);
+        balanceTrendChart.setData(lineData);
+        
+        // Customizing Axis
+        XAxis xAxis = balanceTrendChart.getXAxis();
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        xAxis.setGranularity(1f);
+        xAxis.setDrawGridLines(false);
+        xAxis.setValueFormatter(new ValueFormatter() {
+            @Override
+            public String getFormattedValue(float value) {
+                int i = (int) value;
+                if (i >= 0 && i < dateList.size()) return dateList.get(i);
+                return "";
+            }
+        });
+
+        // Fix for single point visibility
+        balanceTrendChart.getAxisLeft().setAxisMinimum((float) (currentBalance - 1000));
+        balanceTrendChart.getAxisLeft().setAxisMaximum((float) (Math.max(totalBudget, currentBalance) + 1000));
+
+        balanceTrendChart.getAxisRight().setEnabled(false);
+        balanceTrendChart.getAxisLeft().setDrawGridLines(false);
+        balanceTrendChart.getDescription().setEnabled(false);
+        balanceTrendChart.getLegend().setEnabled(false);
+        balanceTrendChart.animateX(1000);
+        balanceTrendChart.invalidate();
     }
 
     private void updateBudgetMeter(double spent, double limit) {
@@ -235,6 +386,14 @@ public class MainActivity extends BaseActivity {
         }
         if (userProfileManager != null && userProfileManager.isProfileCompleted()) {
             tvGreeting.setText("Hello, " + userProfileManager.getName() + " 👋");
+            
+            // Load Avatar
+            String avatar = userProfileManager.getAvatar();
+            int resId = getResources().getIdentifier(avatar, "drawable", getPackageName());
+            if (resId != 0) {
+                ivDashboardAvatar.setImageResource(resId);
+                ivDashboardAvatar.setPadding(0,0,0,0);
+            }
         }
         if (bottomNavigationView != null) {
             bottomNavigationView.setSelectedItemId(R.id.navigation_home);

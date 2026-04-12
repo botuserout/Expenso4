@@ -33,13 +33,14 @@ public class UserDao {
         return userId;
     }
 
-    public void updateUserProfile(int userId, String name, int age, String profession, String phone) {
+    public void updateUserProfile(int userId, String name, int age, String profession, String phone, String avatar) {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         ContentValues values = new ContentValues();
         values.put("name", name);
         values.put("age", age);
         values.put("profession", profession);
         values.put("phone", phone);
+        values.put("avatar", avatar);
         db.update("Users", values, "user_id = ?", new String[]{String.valueOf(userId)});
     }
 

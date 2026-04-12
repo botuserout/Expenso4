@@ -167,7 +167,7 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="÷ equally"
+                        android:text="equally"
                         android:textColor="@color/primary_purple"
                         android:textSize="12sp"
                         android:textStyle="bold" />
@@ -517,7 +517,7 @@
                         android:layout_height="36dp"
                         android:text="−"
                         android:textSize="18sp"
-                        android:textColor="@color/primary_purple"
+                        android:textColor="@color/black"
                         android:background="@drawable/card_background"
                         android:padding="0dp"
                         android:elevation="2dp" />
@@ -539,7 +539,7 @@
                         android:layout_height="36dp"
                         android:text="+"
                         android:textSize="18sp"
-                        android:textColor="@color/primary_purple"
+                        android:textColor="@color/black"
                         android:background="@drawable/card_background"
                         android:padding="0dp"
                         android:elevation="2dp" />

@@ -18,6 +18,7 @@ public class UserProfileManager {
     private static final String KEY_PROFESSION    = "profile_profession";
     private static final String KEY_PHONE         = "profile_phone";
     private static final String KEY_COMPLETED     = "profile_completed";
+    private static final String KEY_AVATAR        = "profile_avatar";
 
     private final SharedPreferences prefs;
 
@@ -26,12 +27,13 @@ public class UserProfileManager {
     }
 
     // ── Save ──────────────────────────────────────────────────────────────
-    public void saveProfile(String name, int age, String profession, String phone) {
+    public void saveProfile(String name, int age, String profession, String phone, String avatar) {
         prefs.edit()
                 .putString(KEY_NAME, name.trim())
                 .putInt(KEY_AGE, age)
                 .putString(KEY_PROFESSION, profession.trim())
                 .putString(KEY_PHONE, phone.trim())
+                .putString(KEY_AVATAR, avatar)
                 .putBoolean(KEY_COMPLETED, true)
                 .apply();
     }
@@ -47,6 +49,7 @@ public class UserProfileManager {
     public int    getAge()        { return prefs.getInt(KEY_AGE, 0); }
     public String getProfession() { return prefs.getString(KEY_PROFESSION, ""); }
     public String getPhone()      { return prefs.getString(KEY_PHONE, ""); }
+    public String getAvatar()     { return prefs.getString(KEY_AVATAR, "ic_user_profile"); }
 
     /** Returns true if user has already filled their profile. */
     public boolean isProfileCompleted() {

@@ -3,59 +3,60 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
 
-    <!-- Global Color Scheme (New) -->
-    <color name="primary_color">#3AC1F6</color>
-    <color name="primary_light">#A0E5FF</color>
-    <color name="secondary_color">#E8F4F9</color>
-    <color name="background_color">#FBCFCA</color>
-    <color name="accent_color">#F99ECB</color>
+    <!-- Global Color Scheme (Ocean Blue Palette) -->
+    <color name="primary_color">#0A1931</color>
+    <color name="primary_light">#4A7FA7</color>
+    <color name="secondary_color">#B3CFE5</color>
+    <color name="background_color">#F6FAFD</color>
+    <color name="accent_color">#1A3D63</color>
 
-    <!-- Remapping existing semantic names to maintain compatibility and apply globally -->
-    <color name="primary_purple">#3AC1F6</color> <!-- Replaced with Primary -->
-    <color name="primary_blue">#3AC1F6</color>   <!-- Replaced with Primary -->
-    <color name="accent_pink">#F99ECB</color>    <!-- Replaced with Accent -->
+    <!-- Remapping semantic names -->
+    <color name="primary_purple">#0A1931</color>
+    <color name="primary_blue">#1A3D63</color>
+    <color name="accent_pink">#4A7FA7</color>
     
     <!-- Backgrounds -->
-    <color name="background_light">#FBCFCA</color> <!-- New Background -->
+    <color name="background_light">#F6FAFD</color>
     <color name="card_background">#FFFFFF</color>
-    <color name="surface_light">#E8F4F9</color>   <!-- New Secondary -->
+    <color name="surface_light">#EEF5F9</color> <!-- Very light tint of blue -->
     <color name="nav_background">#FFFFFF</color>
+    <color name="app_background_color">#F6FAFD</color>
 
     <!-- Text -->
-    <color name="text_primary">#1E1E2D</color>
-    <color name="text_secondary">#6B7280</color>
+    <color name="text_primary">#0A1931</color>
+    <color name="text_secondary">#4A7FA7</color>
     <color name="text_hint">#9CA3AF</color>
 
-    <!-- Gradient stops - matching the new scheme -->
-    <color name="gradient_start">#3AC1F6</color>
-    <color name="gradient_middle">#A0E5FF</color>
-    <color name="gradient_end">#F99ECB</color>
+    <!-- Gradient stops -->
+    <color name="gradient_start">#0A1931</color>
+    <color name="gradient_middle">#1A3D63</color>
+    <color name="gradient_end">#4A7FA7</color>
 
-    <!-- Soft Pastels (for icon backgrounds) -->
-    <color name="pastel_purple">#EDE9FE</color>
-    <color name="pastel_blue">#DBEAFE</color>
-    <color name="pastel_pink">#FCE7F3</color>
-    <color name="pastel_green">#DCFCE7</color>
+    <!-- Soft Pastels (for icon backgrounds - adjusted for blue theme) -->
+    <color name="pastel_purple">#E0E7FF</color>
+    <color name="pastel_blue">#B3CFE5</color>
+    <color name="pastel_pink">#F6FAFD</color>
+    <color name="pastel_green">#D1FAE5</color>
     <color name="pastel_red">#FEE2E2</color>
 
-    <!-- Category (Tweaked to fit) -->
+    <!-- Category (Tweaked to fit the blue aesthetic) -->
     <color name="food_color">#F59E0B</color>
     <color name="travel_color">#10B981</color>
     <color name="shopping_color">#EF4444</color>
-    <color name="bills_color">#3AC1F6</color>
+    <color name="bills_color">#1A3D63</color>
 
     <!-- Status -->
-    <color name="expense_red">#EF4444</color>
-    <color name="income_green">#22C55E</color>
-    <color name="warning_color">#F59E0B</color>
+    <color name="expense_red">#D63031</color>
+    <color name="income_green">#27AE60</color>
+    <color name="warning_color">#F39C12</color>
 
-    <color name="divider">#E5E7EB</color>
-    <color name="nav_active">#3AC1F6</color>
-    <color name="nav_inactive">#9CA3AF</color>
+    <color name="divider">#E1E8ED</color>
+    <color name="nav_active">#0A1931</color>
+    <color name="nav_inactive">#B3CFE5</color>
 
     <!-- Budget Meter Status Colors -->
-    <color name="status_safe">#10B981</color>
-    <color name="status_warning">#F59E0B</color>
-    <color name="status_critical">#F97316</color>
-    <color name="status_exceeded">#EF4444</color>
+    <color name="status_safe">#27AE60</color>
+    <color name="status_warning">#F39C12</color>
+    <color name="status_critical">#E67E22</color>
+    <color name="status_exceeded">#D63031</color>
 </resources>

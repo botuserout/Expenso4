@@ -13,6 +13,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.expenso.R;
+import com.example.expenso.utils.PinManager;
 import com.example.expenso.utils.UserProfileManager;
 
 public class LoginActivity extends BaseActivity {
@@ -167,6 +168,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void goToDashboard() {
+        PinManager.setAppUnlocked(true); // Unlock session after successful login/setup
         UserProfileManager profileManager = new UserProfileManager(this);
         Intent intent;
         if (!profileManager.isProfileCompleted()) {

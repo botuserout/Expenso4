@@ -21,6 +21,9 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".activities.LockActivity"
+            android:exported="false" />
+        <activity
             android:name=".activities.LoginActivity"
             android:exported="false" />
         <activity
@@ -43,6 +46,9 @@
             android:exported="false" />
         <activity
             android:name=".activities.ChangePinActivity"
+            android:exported="false" />
+        <activity
+            android:name=".activities.GoalsActivity"
             android:exported="false" />
 
         <receiver

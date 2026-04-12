@@ -15,6 +15,7 @@ import com.example.expenso.utils.NotificationHelper;
 import com.example.expenso.utils.PinManager;
 import com.example.expenso.workers.SmartRemindersWorker;
 
+import android.content.Intent;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 
@@ -25,6 +26,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class BaseActivity extends AppCompatActivity {
 
     protected PinManager pinManager;
+    private static int activeActivities = 0; // Simple foreground detection
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -48,6 +50,41 @@ public abstract class BaseActivity extends AppCompatActivity {
                 ExistingPeriodicWorkPolicy.KEEP,
                 reminderRequest
         );
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        activeActivities++;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        activeActivities--;
+        if (activeActivities == 0) {
+            // App might have gone to background. 
+            // We wait a moment to see if another activity starts (which would increment it back to 1).
+            new android.os.Handler(android.os.Looper.getMainLooper()).postDelayed(() -> {
+                if (activeActivities == 0) {
+                    PinManager.setAppUnlocked(false);
+                }
+            }, 700); // 700ms grace period for transitions
+        }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Check if lock enforcement is needed
+        if (pinManager.isPinSetup() && !PinManager.isAppUnlocked()) {
+            // Avoid loop if already on Lock or Login screen
+            if (!(this instanceof LockActivity || this instanceof LoginActivity)) {
+                Intent intent = new Intent(this, LockActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                startActivity(intent);
+            }
+        }
     }
 
     @Override

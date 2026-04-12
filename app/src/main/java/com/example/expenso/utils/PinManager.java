@@ -17,6 +17,7 @@ public class PinManager {
 
     private SharedPreferences prefs;
     private final UserDao userDao;
+    private static boolean isAppUnlocked = false; // In-memory session
 
     public PinManager(Context context) {
         try {
@@ -124,5 +125,13 @@ public class PinManager {
 
     public void setNotificationsEnabled(boolean enabled) {
         prefs.edit().putBoolean("notifications_enabled", enabled).apply();
+    }
+
+    public static boolean isAppUnlocked() {
+        return isAppUnlocked;
+    }
+
+    public static void setAppUnlocked(boolean unlocked) {
+        isAppUnlocked = unlocked;
     }
 }

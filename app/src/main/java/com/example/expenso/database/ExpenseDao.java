@@ -97,10 +97,24 @@ public class ExpenseDao {
         return categorySpending;
     }
 
-    public Map<String, Double> getMonthlySpending(int userId) {
-        Map<String, Double> monthlySpending = new HashMap<>();
+    public Map<String, Double> getDailySpending(int userId) {
+        Map<String, Double> dailySpending = new java.util.LinkedHashMap<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
-        // date format: yyyy-MM-dd, we want to group by yyyy-MM
+        Cursor cursor = db.rawQuery("SELECT date, SUM(amount) FROM Expenses WHERE user_id = ? GROUP BY date ORDER BY date ASC", 
+                new String[]{String.valueOf(userId)});
+        
+        if (cursor != null && cursor.moveToFirst()) {
+            do {
+                dailySpending.put(cursor.getString(0), cursor.getDouble(1));
+            } while (cursor.moveToNext());
+            cursor.close();
+        }
+        return dailySpending;
+    }
+
+    public Map<String, Double> getMonthlySpending(int userId) {
+        Map<String, Double> monthlySpending = new java.util.HashMap<>();
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = db.rawQuery("SELECT strftime('%Y-%m', date) as month, SUM(amount) " +
                         "FROM Expenses WHERE user_id = ? GROUP BY month ORDER BY month ASC", 
                 new String[]{String.valueOf(userId)});

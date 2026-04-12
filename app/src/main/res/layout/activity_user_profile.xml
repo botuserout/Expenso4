@@ -53,26 +53,116 @@
                 android:layout_marginBottom="24dp"
                 android:elevation="4dp">
 
-                <ImageView android:layout_width="48dp"
-                    android:layout_height="48dp"
+                <ImageView 
+                    android:id="@+id/iv_profile_header"
+                    android:layout_width="64dp"
+                    android:layout_height="64dp"
                     android:src="@drawable/ic_user_profile"
-                    app:tint="@color/white" />
+                    app:tint="@color/white"
+                    android:padding="8dp" />
 
                 <TextView
+                    android:id="@+id/tv_profile_header_name"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Tell us about yourself"
+                    android:text="Your Avatar"
                     android:textColor="@color/white"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:layout_marginTop="8dp" />
+                    android:layout_marginTop="4dp" />
+            </LinearLayout>
+
+            <!-- ── Avatar Selection ── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/card_background"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:layout_marginBottom="12dp"
+                android:elevation="4dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Just once — helps personalize your experience"
-                    android:textColor="#CCffffff"
-                    android:textSize="12sp" />
+                    android:text="Choose Your Avatar"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"
+                    android:layout_marginBottom="12dp" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:scrollbars="none">
+
+                    <LinearLayout
+                        android:id="@+id/layout_avatars"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:paddingVertical="4dp">
+
+                        <ImageView
+                            android:id="@+id/avatar_luffy"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:layout_marginEnd="12dp"
+                            android:src="@drawable/luffy"
+                            android:background="@drawable/input_background"
+                            android:padding="4dp"
+                            android:contentDescription="Luffy" />
+
+                        <ImageView
+                            android:id="@+id/avatar_zoro"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:layout_marginEnd="12dp"
+                            android:src="@drawable/zoro"
+                            android:background="@drawable/input_background"
+                            android:padding="4dp"
+                            android:contentDescription="Zoro" />
+
+                        <ImageView
+                            android:id="@+id/avatar_nami"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:layout_marginEnd="12dp"
+                            android:src="@drawable/nami"
+                            android:background="@drawable/input_background"
+                            android:padding="4dp"
+                            android:contentDescription="Nami" />
+
+                        <ImageView
+                            android:id="@+id/avatar_sanji"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:layout_marginEnd="12dp"
+                            android:src="@drawable/sanji"
+                            android:background="@drawable/input_background"
+                            android:padding="4dp"
+                            android:contentDescription="Sanji" />
+
+                        <ImageView
+                            android:id="@+id/avatar_robin"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:layout_marginEnd="12dp"
+                            android:src="@drawable/robin"
+                            android:background="@drawable/input_background"
+                            android:padding="4dp"
+                            android:contentDescription="Robin" />
+
+                        <ImageView
+                            android:id="@+id/avatar_brook"
+                            android:layout_width="60dp"
+                            android:layout_height="60dp"
+                            android:src="@drawable/brook"
+                            android:background="@drawable/input_background"
+                            android:padding="4dp"
+                            android:contentDescription="Brook" />
+
+                    </LinearLayout>
+                </HorizontalScrollView>
             </LinearLayout>
 
             <!-- ── Name Field ── -->

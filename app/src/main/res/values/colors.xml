@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Global Color Scheme (New) -->
+    <color name="primary_color">#3AC1F6</color>
+    <color name="primary_light">#A0E5FF</color>
+    <color name="secondary_color">#E8F4F9</color>
+    <color name="background_color">#FBCFCA</color>
+    <color name="accent_color">#F99ECB</color>
+
+    <!-- Remapping existing semantic names to maintain compatibility and apply globally -->
+    <color name="primary_purple">#3AC1F6</color> <!-- Replaced with Primary -->
+    <color name="primary_blue">#3AC1F6</color>   <!-- Replaced with Primary -->
+    <color name="accent_pink">#F99ECB</color>    <!-- Replaced with Accent -->
+    
+    <!-- Backgrounds -->
+    <color name="background_light">#FBCFCA</color> <!-- New Background -->
+    <color name="card_background">#FFFFFF</color>
+    <color name="surface_light">#E8F4F9</color>   <!-- New Secondary -->
+    <color name="nav_background">#FFFFFF</color>
+
+    <!-- Text -->
+    <color name="text_primary">#1E1E2D</color>
+    <color name="text_secondary">#6B7280</color>
+    <color name="text_hint">#9CA3AF</color>
+
+    <!-- Gradient stops - matching the new scheme -->
+    <color name="gradient_start">#3AC1F6</color>
+    <color name="gradient_middle">#A0E5FF</color>
+    <color name="gradient_end">#F99ECB</color>
+
+    <!-- Soft Pastels (for icon backgrounds) -->
+    <color name="pastel_purple">#EDE9FE</color>
+    <color name="pastel_blue">#DBEAFE</color>
+    <color name="pastel_pink">#FCE7F3</color>
+    <color name="pastel_green">#DCFCE7</color>
+    <color name="pastel_red">#FEE2E2</color>
+
+    <!-- Category (Tweaked to fit) -->
+    <color name="food_color">#F59E0B</color>
+    <color name="travel_color">#10B981</color>
+    <color name="shopping_color">#EF4444</color>
+    <color name="bills_color">#3AC1F6</color>
+
+    <!-- Status -->
+    <color name="expense_red">#EF4444</color>
+    <color name="income_green">#22C55E</color>
+    <color name="warning_color">#F59E0B</color>
+
+    <color name="divider">#E5E7EB</color>
+    <color name="nav_active">#3AC1F6</color>
+    <color name="nav_inactive">#9CA3AF</color>
+</resources>

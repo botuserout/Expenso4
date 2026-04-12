@@ -1,0 +1,76 @@
+<resources>
+    <string name="app_name">Expenso</string>
+
+    <!-- Login Screen -->
+    <string name="welcome_to_expenso">Welcome to Expenso</string>
+    <string name="enter_pin_continue">Enter your PIN to continue</string>
+    <string name="forgot_pin">Forgot PIN?</string>
+
+    <!-- Dashboard -->
+    <string name="hello_user">Hello, Rakesh 👋</string>
+    <string name="total_balance">Total Balance</string>
+    <string name="income">Income</string>
+    <string name="expenses">Expenses</string>
+    <string name="savings">Savings</string>
+    <string name="spending_overview">Spending Overview</string>
+    <string name="recent_transactions">Recent Transactions</string>
+    <string name="add_expense">Add Expense</string>
+    <string name="reports">Reports</string>
+    <string name="split_expense">Split Expense</string>
+
+    <!-- Add Expense -->
+    <string name="add_expense_title">Add Expense</string>
+    <string name="amount">Amount</string>
+    <string name="category">Category</string>
+    <string name="food">Food</string>
+    <string name="travel">Travel</string>
+    <string name="shopping">Shopping</string>
+    <string name="bills">Bills</string>
+    <string name="date">Date</string>
+    <string name="select_date">Select Date</string>
+    <string name="payment_method">Payment Method</string>
+    <string name="description">Description</string>
+    <string name="add_note">Add a note...</string>
+    <string name="save_expense">Save Expense</string>
+
+    <!-- Split Expense -->
+    <string name="split_expense_title">Split Expense</string>
+    <string name="total_amount">Total Amount</string>
+    <string name="participants">Participants</string>
+    <string name="add_participant">+ Add Participant</string>
+    <string name="split_method">Split Method</string>
+    <string name="split_equally">Split Equally</string>
+    <string name="custom_split">Custom Split</string>
+    <string name="split_expense_btn">Split Expense</string>
+
+    <!-- Reports -->
+    <string name="reports_title">Reports</string>
+    <string name="week">Week</string>
+    <string name="month">Month</string>
+    <string name="year">Year</string>
+    <string name="category_wise_spending">Category-wise Spending</string>
+    <string name="monthly_expenses">Monthly Expenses</string>
+    <string name="total_spent">Total Spent</string>
+    <string name="avg_per_day">Avg/Day</string>
+    <string name="top_category">Top Category</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="language">Language</string>
+    <string name="english">English</string>
+    <string name="security">Security</string>
+    <string name="budget">Budget</string>
+    <string name="notifications">Notifications</string>
+    <string name="export_data">Export Data</string>
+    <string name="import_data">Import Data</string>
+    <string name="bill_reminder">Bill Reminder</string>
+    <string name="set_reminder">Set Reminder</string>
+    <string name="reminder_message">Don\'t forget to pay your bill!</string>
+    <string name="reminder_set_success">Reminder set successfully!</string>
+    <string name="csv_import_success">Data imported successfully!</string>
+    <string name="csv_import_error">Failed to import data.</string>
+    <string name="about_expenso">About Expenso</string>
+    <string name="version">v1.0.0</string>
+
+
+</resources>

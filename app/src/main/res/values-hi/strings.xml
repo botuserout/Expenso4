@@ -1,0 +1,75 @@
+<resources>
+    <string name="app_name">एक्स्पेंसो</string>
+
+    <!-- Login Screen -->
+    <string name="welcome_to_expenso">एक्स्पेंसो में आपका स्वागत है</string>
+    <string name="enter_pin_continue">जारी रखने के लिए अपना पिन दर्ज करें</string>
+    <string name="forgot_pin">पिन भूल गए?</string>
+
+    <!-- Dashboard -->
+    <string name="hello_user">नमस्ते, राकेश 👋</string>
+    <string name="total_balance">कुल शेष</string>
+    <string name="income">आय</string>
+    <string name="expenses">खर्च</string>
+    <string name="savings">बचत</string>
+    <string name="spending_overview">खर्च अवलोकन</string>
+    <string name="recent_transactions">हाल के लेनदेन</string>
+    <string name="add_expense">खर्च जोड़ें</string>
+    <string name="reports">रिपोर्ट</string>
+    <string name="split_expense">खर्च बाटें</string>
+
+    <!-- Add Expense -->
+    <string name="add_expense_title">खर्च जोड़ें</string>
+    <string name="amount">राशि</string>
+    <string name="category">श्रेणी</string>
+    <string name="food">भोजन</string>
+    <string name="travel">यात्रा</string>
+    <string name="shopping">खरीदारी</string>
+    <string name="bills">बिल</string>
+    <string name="date">तारीख</string>
+    <string name="select_date">तारीख चुनें</string>
+    <string name="payment_method">भुगतान विधि</string>
+    <string name="description">विवरण</string>
+    <string name="add_note">नोट जोड़ें...</string>
+    <string name="save_expense">खर्च सहेजें</string>
+
+    <!-- Split Expense -->
+    <string name="split_expense_title">खर्च बाटें</string>
+    <string name="total_amount">कुल राशि</string>
+    <string name="participants">भागीदार</string>
+    <string name="add_participant">+ भागीदार जोड़ें</string>
+    <string name="split_method">बांटने की विधि</string>
+    <string name="split_equally">समान रूप से बाटें</string>
+    <string name="custom_split">कस्टम बंटवारा</string>
+    <string name="split_expense_btn">खर्च बाटें</string>
+
+    <!-- Reports -->
+    <string name="reports_title">रिपोर्ट</string>
+    <string name="week">सप्ताह</string>
+    <string name="month">महीना</string>
+    <string name="year">वर्ष</string>
+    <string name="category_wise_spending">श्रेणी-वार खर्च</string>
+    <string name="monthly_expenses">मासिक खर्च</string>
+    <string name="total_spent">कुल खर्च</string>
+    <string name="avg_per_day">औसत/दिन</string>
+    <string name="top_category">शीर्ष श्रेणी</string>
+
+    <!-- Settings -->
+    <string name="settings_title">सेटिंग्स</string>
+    <string name="language">भाषा</string>
+    <string name="english">अंग्रेजी</string>
+    <string name="security">सुरक्षा</string>
+    <string name="budget">बजट</string>
+    <string name="notifications">सूचनाएं</string>
+    <string name="export_data">डेटा निर्यात करें</string>
+    <string name="import_data">डेटा आयात करें</string>
+    <string name="bill_reminder">बिल अनुस्मारक</string>
+    <string name="set_reminder">अनुस्मारक सेट करें</string>
+    <string name="reminder_message">अपना बिल चुकाना न भूलें!</string>
+    <string name="reminder_set_success">अनुस्मारक सफलतापूर्वक सेट किया गया!</string>
+    <string name="csv_import_success">डेटा सफलतापूर्वक आयात किया गया!</string>
+    <string name="csv_import_error">डेटा आयात करने में विफल।</string>
+    <string name="about_expenso">एक्स्पेंसो के बारे में</string>
+    <string name="version">v1.0.0</string>
+
+</resources>

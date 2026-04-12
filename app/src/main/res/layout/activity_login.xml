@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    activity_login.xml
+    Redesigned with LinearLayout for correct stacking, proper logo ImageView,
+    and an id on root so LoginActivity.java can resolve it via findViewById(R.id.main).
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center_horizontal"
+    android:background="@color/background_light"
+    android:padding="24dp">
+
+    <!-- App Logo / Illustration -->
+    <ImageView
+        android:id="@+id/app_logo"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_marginTop="48dp"
+        android:layout_marginBottom="16dp"
+        android:src="@drawable/ic_app_logo_vector"
+        android:contentDescription="Expenso Logo"
+        android:scaleType="centerInside"
+        android:padding="12dp" />
+
+    <!-- App Name -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Expenso"
+        android:textSize="32sp"
+        android:textStyle="bold"
+        android:textColor="@color/primary_color"
+        android:layout_marginBottom="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Expenso"
+        android:textSize="28sp"
+        android:textStyle="bold"
+        android:textColor="@color/primary_purple"
+        android:layout_marginBottom="4dp" />
+
+    <!-- Welcome text — changes between Login / Setup mode -->
+    <TextView
+        android:id="@+id/tv_login_subtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enter your PIN to continue"
+        android:textColor="@color/text_secondary"
+        android:textSize="15sp"
+        android:layout_marginBottom="28dp" />
+
+    <!-- PIN dots display -->
+
+    <!-- Number Keypad -->
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="28dp"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/pin_digit_1"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/card_background"
+            android:elevation="4dp"
+            android:gravity="center"
+            android:textColor="@color/text_primary"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/pin_digit_2"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/card_background"
+            android:elevation="4dp"
+            android:gravity="center"
+            android:textColor="@color/text_primary"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/pin_digit_3"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_marginEnd="12dp"
+            android:background="@drawable/card_background"
+            android:elevation="4dp"
+            android:gravity="center"
+            android:textColor="@color/text_primary"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/pin_digit_4"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/card_background"
+            android:elevation="4dp"
+            android:gravity="center"
+            android:textColor="@color/text_primary"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+    </LinearLayout>
+
+    <!-- Forgot PIN / Reset link -->
+
+    <GridLayout
+        android:layout_width="248dp"
+        android:layout_height="wrap_content"
+        android:columnCount="3"
+        android:rowCount="4">
+
+        <Button
+            android:id="@+id/btn_1"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/card_background"
+            android:elevation="2dp"
+            android:text="1"
+            android:textColor="@color/text_primary"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/btn_2"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/card_background"
+            android:elevation="2dp"
+            android:text="2"
+            android:textColor="@color/text_primary"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/btn_3"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_row="0"
+            android:layout_column="2"
+            android:layout_margin="6dp"
+            android:background="@drawable/card_background"
+            android:elevation="2dp"
+            android:text="3"
+            android:textColor="@color/text_primary"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/btn_4"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/card_background"
+            android:elevation="2dp"
+            android:text="4"
+            android:textColor="@color/text_primary"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/btn_5"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/card_background"
+            android:elevation="2dp"
+            android:text="5"
+            android:textColor="@color/text_primary"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/btn_6"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/card_background"
+            android:elevation="2dp"
+            android:text="6"
+            android:textColor="@color/text_primary"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/btn_7"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/card_background"
+            android:elevation="2dp"
+            android:text="7"
+            android:textColor="@color/text_primary"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/btn_8"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/card_background"
+            android:elevation="2dp"
+            android:text="8"
+            android:textColor="@color/text_primary"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/btn_9"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/card_background"
+            android:elevation="2dp"
+            android:text="9"
+            android:textColor="@color/text_primary"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/btn_clear"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/card_background"
+            android:elevation="2dp"
+            android:text="⌫"
+            android:textColor="@color/text_secondary"
+            android:textSize="20sp" />
+
+        <Button
+            android:id="@+id/btn_0"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/card_background"
+            android:elevation="2dp"
+            android:text="0"
+            android:textColor="@color/text_primary"
+            android:textSize="24sp" />
+
+        <Button
+            android:id="@+id/btn_enter"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_margin="6dp"
+            android:background="@drawable/gradient_card_background"
+            android:elevation="4dp"
+            android:text="✓"
+            android:textColor="@color/white"
+            android:textSize="20sp" />
+
+    </GridLayout>
+
+    <TextView
+        android:id="@+id/tv_forgot_pin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Forgot PIN? Reset"
+        android:textColor="@color/primary_purple"
+        android:textSize="14sp"
+        android:paddingTop="16dp"
+        android:paddingBottom="16dp" />
+
+</LinearLayout>

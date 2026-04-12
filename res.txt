@@ -1,0 +1,43 @@
+You are working inside an existing Android project named "Expenso". Your task is to design and implement UI components only, with strict safety and minimal impact on the existing codebase.
+
+STRICT RULES (MUST FOLLOW):
+
+1. Do NOT modify or delete any existing Java files, XML files, database code, or business logic unless absolutely necessary.
+2. Do NOT refactor, rename, or restructure existing classes, methods, or variables.
+3. Only CREATE new XML layout files or ADD UI components inside clearly marked sections.
+4. If any change is required in existing files:
+
+   * Clearly explain WHY before making the change
+   * Keep the change minimal and isolated
+5. Do NOT break app functionality or introduce dependency conflicts.
+6. Do NOT change database schema, API logic, or backend-related code.
+7. Follow existing project structure and naming conventions strictly.
+
+TASK:
+
+Design modern UI layouts (in XML) for the following screens of the "Expenso" app:
+
+* Dashboard Screen
+* Add Expense Screen
+* Split Expense Screen
+* Reports Screen
+* Settings Screen
+
+UI REQUIREMENTS:
+
+* Use clean, modern fintech-style UI inspired by Dribbble designs
+* Use CardView, ConstraintLayout, and Material Design components
+* Maintain proper padding, spacing, and alignment
+* Use reusable styles and colors (define in colors.xml if needed)
+* Keep layouts responsive for different screen sizes
+
+OUTPUT FORMAT:
+
+* Provide only the required XML files or code snippets
+* Clearly mention file names (e.g., activity_dashboard.xml)
+* If modifying an existing file, highlight only the changed section
+* Add comments in code for clarity
+
+CONSTRAINT:
+
+Your priority is SAFETY over creativity. Do not make unnecessary changes. Preserve the stability of the project at all costs.

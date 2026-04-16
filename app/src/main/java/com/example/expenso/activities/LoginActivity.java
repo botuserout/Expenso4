@@ -70,19 +70,35 @@ public class LoginActivity extends BaseActivity {
             updateModeUI();
             Toast.makeText(this, "PIN reset. Please create a new PIN.", Toast.LENGTH_SHORT).show();
         });
+
+        // "New Account?" → Force Setup Mode for a new User ID
+        TextView createAccount = findViewById(R.id.tv_create_account);
+        createAccount.setOnClickListener(v -> {
+            new UserProfileManager(this).clearProfile(); // Clear old cached data
+            isSetupMode = true;
+            firstPinEntry = null;
+            enteredPin.setLength(0);
+            updatePinDisplay();
+            updateModeUI();
+            Toast.makeText(this, "Creating a new account...", Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void updateModeUI() {
         TextView subtitle = findViewById(R.id.tv_login_subtitle);
         TextView forgotPin = findViewById(R.id.tv_forgot_pin);
+        TextView createAccount = findViewById(R.id.tv_create_account);
+        
         if (isSetupMode) {
             subtitle.setText(firstPinEntry == null
                     ? "Create a 4-digit PIN to secure your account"
                     : "Confirm your PIN");
             forgotPin.setVisibility(View.GONE);
+            createAccount.setVisibility(View.GONE);
         } else {
             subtitle.setText("Enter your PIN to continue");
             forgotPin.setVisibility(View.VISIBLE);
+            createAccount.setVisibility(View.VISIBLE);
         }
     }
 
@@ -158,7 +174,7 @@ public class LoginActivity extends BaseActivity {
         if (pinManager.verifyPin(pin)) {
             // Updated to use the correct session handling in PinManager
             int userId = pinManager.getUserIdByPin(pin);
-            pinManager.saveLoginSession(userId, pinManager.getUserName());
+            pinManager.saveLoginSession(userId, this);
             goToDashboard();
         } else {
             Toast.makeText(this, "Incorrect PIN. Please try again.", Toast.LENGTH_SHORT).show();

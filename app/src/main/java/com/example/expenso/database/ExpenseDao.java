@@ -32,16 +32,25 @@ public class ExpenseDao {
         values.put("description", expense.getDescription());
         
         long result = db.insert("Expenses", null, values);
-        if (result == -1) Log.e(TAG, "Failed to insert expense");
+        if (result != -1) {
+            Log.d(TAG, "Expense inserted successfully with ID: " + result + " for user: " + expense.getUserId());
+        } else {
+            Log.e(TAG, "Failed to insert expense into table 'Expenses'");
+        }
         return result;
     }
 
     public List<Expense> getAllExpenses(int userId) {
+        return getRecentExpenses(userId, -1);
+    }
+
+    public List<Expense> getRecentExpenses(int userId, int limit) {
         List<Expense> expenses = new ArrayList<>();
         SQLiteDatabase db = dbHelper.getReadableDatabase();
         Cursor cursor = null;
         try {
-            cursor = db.query("Expenses", null, "user_id = ?", new String[]{String.valueOf(userId)}, null, null, "date DESC");
+            String limitStr = (limit > 0) ? String.valueOf(limit) : null;
+            cursor = db.query("Expenses", null, "user_id = ?", new String[]{String.valueOf(userId)}, null, null, "date DESC", limitStr);
             if (cursor != null && cursor.moveToFirst()) {
                 do {
                     Expense expense = new Expense();
@@ -54,6 +63,9 @@ public class ExpenseDao {
                     expenses.add(expense);
                 } while (cursor.moveToNext());
             }
+            Log.d(TAG, "Fetched " + expenses.size() + " expenses for user: " + userId + " (Limit: " + limit + ")");
+        } catch (Exception e) {
+            Log.e(TAG, "Error fetching expenses: " + e.getMessage());
         } finally {
             if (cursor != null) cursor.close();
         }

@@ -118,7 +118,14 @@ public class UserProfileActivity extends BaseActivity {
         if (resId != 0) {
             ivProfileHeader.setImageResource(resId);
             ivProfileHeader.setPadding(0, 0, 0, 0); // Remove padding for character icons
-            ivProfileHeader.setColorFilter(null); // Remove white tint
+            
+            // Comprehensive tint clearing
+            ivProfileHeader.setColorFilter(null);
+            ivProfileHeader.setImageTintList(null); 
+            
+            // Update Header Name (capitalize first letter)
+            String capitalized = selectedAvatar.substring(0, 1).toUpperCase() + selectedAvatar.substring(1);
+            tvProfileHeaderName.setText(capitalized);
         }
     }
 

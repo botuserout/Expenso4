@@ -3,9 +3,11 @@ package com.example.expenso.adapters;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.expenso.R;
@@ -54,7 +56,7 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
         private final TextView expenseCategory;
         private final TextView expenseAmount;
         private final TextView expenseDate;
-        private final View expenseIcon;
+        private final ImageView expenseIcon;
 
         public ExpenseViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -88,40 +90,44 @@ public class ExpenseAdapter extends RecyclerView.Adapter<ExpenseAdapter.ExpenseV
                 expenseDate.setText(expense.getDate());
             }
 
-            // Set category color
-            setCategoryColor(expense.getCategory());
+            // Set category icon and background
+            setCategoryIcon(expense.getCategory());
         }
 
-        private void setCategoryColor(String category) {
+        private void setCategoryIcon(String category) {
+            int iconResId;
             int colorResId;
-            switch (category.toLowerCase()) {
-                case "food":
-                    colorResId = R.color.food_color;
-                    break;
-                case "transport":
-                case "travel":
-                    colorResId = R.color.travel_color;
-                    break;
-                case "shopping":
-                    colorResId = R.color.shopping_color;
-                    break;
-                case "entertainment":
-                    colorResId = R.color.pastel_pink;
-                    break;
-                case "bills":
-                    colorResId = R.color.bills_color;
-                    break;
-                case "health":
-                    colorResId = R.color.pastel_green;
-                    break;
-                case "education":
-                    colorResId = R.color.pastel_blue;
-                    break;
-                default:
-                    colorResId = R.color.pastel_purple;
-                    break;
+            
+            String cat = category != null ? category.toLowerCase() : "";
+            
+            if (cat.contains("food")) {
+                iconResId = R.drawable.ic_home; // Use home for food for now
+                colorResId = R.color.pastel_purple;
+            } else if (cat.contains("transport") || cat.contains("travel")) {
+                iconResId = R.drawable.ic_location;
+                colorResId = R.color.pastel_green;
+            } else if (cat.contains("shopping")) {
+                iconResId = R.drawable.ic_payment;
+                colorResId = R.color.pastel_pink;
+            } else if (cat.contains("entertainment")) {
+                iconResId = R.drawable.ic_camera;
+                colorResId = R.color.pastel_purple;
+            } else if (cat.contains("bills")) {
+                iconResId = R.drawable.ic_phone;
+                colorResId = R.color.pastel_red;
+            } else if (cat.contains("education")) {
+                iconResId = R.drawable.ic_briefcase;
+                colorResId = R.color.pastel_blue;
+            } else if (cat.contains("split")) {
+                iconResId = R.drawable.ic_split;
+                colorResId = R.color.pastel_purple;
+            } else {
+                iconResId = R.drawable.ic_user_profile;
+                colorResId = R.color.pastel_blue;
             }
-            expenseIcon.setBackgroundColor(itemView.getContext().getColor(colorResId));
+
+            expenseIcon.setImageResource(iconResId);
+            expenseIcon.setBackgroundTintList(ContextCompat.getColorStateList(itemView.getContext(), colorResId));
         }
     }
-}
+}

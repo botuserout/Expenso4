@@ -50,6 +50,9 @@
         <activity
             android:name=".activities.GoalsActivity"
             android:exported="false" />
+        <activity
+            android:name=".activities.AllTransactionsActivity"
+            android:exported="false" />
 
         <receiver
             android:name=".utils.ReminderReceiver"

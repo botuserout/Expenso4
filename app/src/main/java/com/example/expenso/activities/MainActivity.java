@@ -146,11 +146,16 @@ public class MainActivity extends BaseActivity {
     private void setupRecyclerView() {
         expensesRecyclerView = findViewById(R.id.expenses_recycler_view);
         expensesRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        expensesRecyclerView.setNestedScrollingEnabled(false); // Smooth scroll in NestedScrollView
         expenseAdapter = new ExpenseAdapter(null);
         expensesRecyclerView.setAdapter(expenseAdapter);
     }
 
     private void setupClickListeners() {
+        // "See All" — show all transactions
+        findViewById(R.id.btn_see_all).setOnClickListener(v -> 
+                startActivity(new Intent(this, AllTransactionsActivity.class)));
+
         // FAB — add expense
         FloatingActionButton fabAddExpense = findViewById(R.id.fab_add_expense);
         fabAddExpense.setOnClickListener(v ->
@@ -186,7 +191,7 @@ public class MainActivity extends BaseActivity {
     private void loadDashboardData() {
         int userId = pinManager.getCurrentUserId();
         new Thread(() -> {
-            List<Expense> expenses = expenseDao.getAllExpenses(userId);
+            List<Expense> expenses = expenseDao.getRecentExpenses(userId, 5);
             double totalExpenses = expenseDao.getTotalExpenses(userId);
             double owedAmount = expenseDao.getOwedAmount(userId);
             double oweAmount = expenseDao.getOweAmount(userId);

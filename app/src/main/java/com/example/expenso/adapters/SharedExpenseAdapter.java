@@ -16,13 +16,15 @@ public class SharedExpenseAdapter extends RecyclerView.Adapter<SharedExpenseAdap
 
     private List<SharedExpense> sharedExpenses;
     private OnSettleClickListener listener;
+    private int currentUserId;
 
     public interface OnSettleClickListener {
         void onSettleClick(SharedExpense expense);
     }
 
-    public SharedExpenseAdapter(List<SharedExpense> sharedExpenses, OnSettleClickListener listener) {
+    public SharedExpenseAdapter(List<SharedExpense> sharedExpenses, int currentUserId, OnSettleClickListener listener) {
         this.sharedExpenses = sharedExpenses;
+        this.currentUserId = currentUserId;
         this.listener = listener;
     }
 
@@ -36,7 +38,16 @@ public class SharedExpenseAdapter extends RecyclerView.Adapter<SharedExpenseAdap
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         SharedExpense expense = sharedExpenses.get(position);
-        holder.personName.setText(expense.getPersonName() != null ? expense.getPersonName() : "Friend");
+        String friendName = expense.getPersonName() != null ? expense.getPersonName() : "Friend";
+        
+        if (expense.getOwesToId() == currentUserId) {
+            holder.personName.setText(friendName + " owes you");
+            holder.amount.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.income_green));
+        } else {
+            holder.personName.setText("You owe " + friendName);
+            holder.amount.setTextColor(ContextCompat.getColor(holder.itemView.getContext(), R.color.expense_red));
+        }
+
         holder.amount.setText(String.format("₹%.2f", expense.getAmount()));
         holder.status.setText(expense.getStatus());
 

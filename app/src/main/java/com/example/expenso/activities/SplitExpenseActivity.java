@@ -9,6 +9,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -50,6 +51,14 @@ public class SplitExpenseActivity extends BaseActivity {
     private PinManager pinManager;
     private boolean isCustomSplit = false;
 
+    private RadioGroup rgWhoPaid;
+    private RadioButton rbIPaid, rbSomeoneElsePaid;
+    private View payerNameContainer;
+    private EditText etPayerName;
+
+    private RecyclerView rvOwedToYou, rvYouOwe;
+    private SharedExpenseAdapter adapterOwedToYou, adapterYouOwe;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +97,12 @@ public class SplitExpenseActivity extends BaseActivity {
         btnIncrease        = findViewById(R.id.btn_increase);
         btnSplitConfirm    = findViewById(R.id.btn_split_confirm);
 
+        rgWhoPaid           = findViewById(R.id.rg_who_paid);
+        rbIPaid             = findViewById(R.id.rb_i_paid);
+        rbSomeoneElsePaid   = findViewById(R.id.rb_someone_else_paid);
+        payerNameContainer  = findViewById(R.id.payer_name_container);
+        etPayerName         = findViewById(R.id.et_payer_name);
+
         p1Share            = findViewById(R.id.participant_1_share);
         p2Share            = findViewById(R.id.participant_2_share);
         p3Share            = findViewById(R.id.participant_3_share);
@@ -97,22 +112,43 @@ public class SplitExpenseActivity extends BaseActivity {
         p3Name             = findViewById(R.id.participant_3_name);
         p4Name             = findViewById(R.id.participant_4_name);
         
-        // p1Share is always the user - keep it disabled for equal split
+        // p1Share is always the user
         p1Share.setEnabled(false); 
 
-        // Shared History
-        rvSharedHistory = findViewById(R.id.rv_shared_history);
-        rvSharedHistory.setLayoutManager(new LinearLayoutManager(this));
+        // Shared History Views
+        rvOwedToYou = findViewById(R.id.rv_owed_to_you);
+        rvYouOwe = findViewById(R.id.rv_you_owe);
+        rvOwedToYou.setLayoutManager(new LinearLayoutManager(this));
+        rvYouOwe.setLayoutManager(new LinearLayoutManager(this));
     }
 
     private void loadSharedHistory() {
         int userId = pinManager.getCurrentUserId();
-        List<SharedExpense> list = expenseDao.getSharedExpenses(userId);
-        if (sharedAdapter == null) {
-            sharedAdapter = new SharedExpenseAdapter(list, this::settleExpense);
-            rvSharedHistory.setAdapter(sharedAdapter);
+        List<SharedExpense> allShared = expenseDao.getSharedExpenses(userId);
+        
+        java.util.List<SharedExpense> owedToYouList = new java.util.ArrayList<>();
+        java.util.List<SharedExpense> youOweList = new java.util.ArrayList<>();
+        
+        for (SharedExpense se : allShared) {
+            if (se.getOwesToId() == userId && se.getPayerId() != userId) {
+                owedToYouList.add(se);
+            } else if (se.getPayerId() == userId && se.getOwesToId() != userId) {
+                youOweList.add(se);
+            }
+        }
+
+        if (adapterOwedToYou == null) {
+            adapterOwedToYou = new SharedExpenseAdapter(owedToYouList, userId, this::settleExpense);
+            rvOwedToYou.setAdapter(adapterOwedToYou);
         } else {
-            sharedAdapter.updateList(list);
+            adapterOwedToYou.updateList(owedToYouList);
+        }
+
+        if (adapterYouOwe == null) {
+            adapterYouOwe = new SharedExpenseAdapter(youOweList, userId, this::settleExpense);
+            rvYouOwe.setAdapter(adapterYouOwe);
+        } else {
+            adapterYouOwe.updateList(youOweList);
         }
     }
 
@@ -129,6 +165,14 @@ public class SplitExpenseActivity extends BaseActivity {
                 if (!isCustomSplit) updateCalculations();
             }
             @Override public void afterTextChanged(Editable s) {}
+        });
+
+        rgWhoPaid.setOnCheckedChangeListener((group, checkedId) -> {
+            if (checkedId == R.id.rb_someone_else_paid) {
+                payerNameContainer.setVisibility(View.VISIBLE);
+            } else {
+                payerNameContainer.setVisibility(View.GONE);
+            }
         });
 
         btnDecrease.setOnClickListener(v -> {
@@ -186,6 +230,14 @@ public class SplitExpenseActivity extends BaseActivity {
         }
         double totalAmount = Double.parseDouble(amountStr);
 
+        boolean iPaid = rbIPaid.isChecked();
+        String externalPayerName = etPayerName.getText().toString().trim();
+
+        if (!iPaid && externalPayerName.isEmpty()) {
+            Toast.makeText(this, "Please enter who paid", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         double[] shares = new double[peopleCount];
         if (isCustomSplit) {
             double sum = 0;
@@ -198,11 +250,11 @@ public class SplitExpenseActivity extends BaseActivity {
                 for (double s : shares) sum += s;
 
                 if (Math.abs(sum - totalAmount) > 0.01) {
-                    Toast.makeText(this, "Total of shares (₹" + sum + ") must equal total (₹" + totalAmount + ")", Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "Total of shares must equal total", Toast.LENGTH_LONG).show();
                     return;
                 }
             } catch (Exception e) {
-                Toast.makeText(this, "Please enter valid amounts for all participants", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "Enter valid amounts", Toast.LENGTH_SHORT).show();
                 return;
             }
         } else {
@@ -210,45 +262,70 @@ public class SplitExpenseActivity extends BaseActivity {
             for (int i = 0; i < peopleCount; i++) shares[i] = equalShare;
         }
 
-        saveSplitToDatabase(totalAmount, shares);
+        saveSplitToDatabase(totalAmount, shares, iPaid, externalPayerName);
     }
 
-    private void saveSplitToDatabase(double totalAmount, double[] shares) {
+    private void saveSplitToDatabase(double totalAmount, double[] shares, boolean iPaid, String externalPayerName) {
         int currentUserId = pinManager.getCurrentUserId();
         String date = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
         
-        // 1. Add Main Expense
-        Expense mainExpense = new Expense(currentUserId, totalAmount, "Split", date, "Group Split");
+        // 1. Add Main Expense (The person who paid gets the expense record)
+        int initialPayerId = iPaid ? currentUserId : -2; // -2 placeholder for external payer to be resolved
         
         new Thread(() -> {
+            int actualPayerId = initialPayerId;
+            if (!iPaid) {
+                actualPayerId = userDao.getUserIdByName(externalPayerName);
+                if (actualPayerId == -1) actualPayerId = userDao.addFriendPlaceholder(externalPayerName);
+            }
+
+            final int finalPayerId = actualPayerId;
+            Expense mainExpense = new Expense(finalPayerId, totalAmount, "Split", date, iPaid ? "You paid group" : externalPayerName + " paid group");
             long expenseId = expenseDao.addExpense(mainExpense);
+            
             if (expenseId != -1) {
-                // Get friend names from EditTexts
                 String[] names = new String[4];
                 names[1] = p2Name.getText().toString().trim();
                 names[2] = p3Name.getText().toString().trim();
                 names[3] = p4Name.getText().toString().trim();
 
-                for (int i = 1; i < peopleCount; i++) {
-                    String friendName = names[i].isEmpty() ? "Friend " + i : names[i];
-                    
-                    // Get or Create Friend ID by Name
-                    int friendId = userDao.getUserIdByName(friendName);
-                    if (friendId == -1) {
-                        friendId = userDao.addFriendPlaceholder(friendName);
+                for (int i = 0; i < peopleCount; i++) {
+                    // Logic:
+                    // If I PAID: Friends owe me. Payer = FriendID, OwesTo = MyID, Amount = Friend's Share
+                    // If OTHERS PAID: I owe them. Payer = MyID, OwesTo = FriendID, Amount = My Share
+
+                    if (iPaid) {
+                        if (i == 0) continue; // My share is already in my expense
+                        String friendName = names[i].isEmpty() ? "Friend " + i : names[i];
+                        int friendId = userDao.getUserIdByName(friendName);
+                        if (friendId == -1) friendId = userDao.addFriendPlaceholder(friendName);
+                        
+                        expenseDao.addSharedExpense((int) expenseId, friendId, currentUserId, shares[i]);
+                    } else {
+                        // Someone else paid.
+                        int creditorId = finalPayerId;
+                        if (i == 0) {
+                            // My share: I (Payer) owe to the creditor (OwesTo)
+                            expenseDao.addSharedExpense((int) expenseId, currentUserId, creditorId, shares[i]);
+                        } else {
+                            // Their share: They owe to the creditor
+                            String friendName = names[i].isEmpty() ? "Friend " + i : names[i];
+                            int debtorId = userDao.getUserIdByName(friendName);
+                            if (debtorId == -1) debtorId = userDao.addFriendPlaceholder(friendName);
+                            
+                            if (debtorId != creditorId) {
+                                expenseDao.addSharedExpense((int) expenseId, debtorId, creditorId, shares[i]);
+                            }
+                        }
                     }
-                    
-                    expenseDao.addSharedExpense((int) expenseId, friendId, currentUserId, shares[i]);
                 }
                 
                 runOnUiThread(() -> {
-                    Toast.makeText(this, "Split Expense Saved Successfully!", Toast.LENGTH_LONG).show();
-                    loadSharedHistory(); // Refresh the list
-                    // Clear fields
+                    Toast.makeText(this, "Split Saved!", Toast.LENGTH_LONG).show();
+                    loadSharedHistory();
                     totalAmountInput.setText("");
+                    etPayerName.setText("");
                 });
-            } else {
-                runOnUiThread(() -> Toast.makeText(this, "Database Error", Toast.LENGTH_SHORT).show());
             }
         }).start();
     }

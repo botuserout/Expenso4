@@ -314,7 +314,8 @@ public class AddExpenseActivity extends BaseActivity {
             String location = locationInput.getText().toString().trim();
 
             // Create expense object
-            Expense expense = new Expense(1, amount, selectedCategoryName, date,
+            int currentUserId = pinManager.getCurrentUserId();
+            Expense expense = new Expense(currentUserId, amount, selectedCategoryName, date,
                     description.isEmpty() ? location : description);
 
             // Create a final copy of peopleCount for the lambdas
@@ -329,7 +330,7 @@ public class AddExpenseActivity extends BaseActivity {
                         // Handle splitting if enabled
                         if (isSplitExpense) {
                             double splitAmount = amount / finalPeopleCount;
-                            int payerId = 1; // Current user
+                            int payerId = currentUserId; // Current user
 
                             // Run shared expense inserts in background as well
                             new Thread(() -> {

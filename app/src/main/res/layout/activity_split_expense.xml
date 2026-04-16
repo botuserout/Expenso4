@@ -116,6 +116,79 @@
                 </LinearLayout>
             </LinearLayout>
 
+            <!-- ── Who Paid Card ── -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@drawable/card_background"
+                android:orientation="vertical"
+                android:padding="20dp"
+                android:layout_marginBottom="16dp"
+                android:elevation="4dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Who Paid?"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="13sp"
+                    android:layout_marginBottom="14dp" />
+
+                <RadioGroup
+                    android:id="@+id/rg_who_paid"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <RadioButton
+                        android:id="@+id/rb_i_paid"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:background="@drawable/input_background"
+                        android:buttonTint="@color/primary_purple"
+                        android:checked="true"
+                        android:paddingHorizontal="12dp"
+                        android:layout_marginBottom="8dp"
+                        android:text="I paid (Others owe me)"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp" />
+
+                    <RadioButton
+                        android:id="@+id/rb_someone_else_paid"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:background="@drawable/input_background"
+                        android:buttonTint="@color/primary_purple"
+                        android:paddingHorizontal="12dp"
+                        android:text="Other person paid (I owe them)"
+                        android:textColor="@color/text_primary"
+                        android:textSize="15sp" />
+                </RadioGroup>
+
+                <!-- Payer name (only if someone else paid) -->
+                <LinearLayout
+                    android:id="@+id/payer_name_container"
+                    android:layout_width="match_parent"
+                    android:layout_height="52dp"
+                    android:background="@drawable/input_background"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="12dp"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone">
+
+                    <EditText
+                        android:id="@+id/et_payer_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:hint="Enter payer's name"
+                        android:textColor="@color/text_primary"
+                        android:textColorHint="@color/text_hint"
+                        android:textSize="15sp"
+                        android:background="@android:color/transparent" />
+                </LinearLayout>
+            </LinearLayout>
+
             <!-- ── Split Method Card ── -->
             <LinearLayout
                 android:layout_width="match_parent"
@@ -517,7 +590,7 @@
                         android:layout_height="36dp"
                         android:text="−"
                         android:textSize="18sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:background="@drawable/card_background"
                         android:padding="0dp"
                         android:elevation="2dp" />
@@ -539,7 +612,7 @@
                         android:layout_height="36dp"
                         android:text="+"
                         android:textSize="18sp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:background="@drawable/card_background"
                         android:padding="0dp"
                         android:elevation="2dp" />
@@ -600,23 +673,40 @@
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- ── Shared History Section ── -->
+            <!-- ── Shared History Sections ── -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Shared History"
-                android:textColor="@color/text_primary"
-                android:textSize="18sp"
+                android:text="You Are Owed"
+                android:textColor="@color/pastel_green"
+                android:textSize="16sp"
                 android:textStyle="bold"
                 android:layout_marginTop="24dp"
-                android:layout_marginBottom="12dp" />
+                android:layout_marginBottom="8dp" />
 
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rv_shared_history"
+                android:id="@+id/rv_owed_to_you"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:nestedScrollingEnabled="false"
-                android:layout_marginBottom="24dp" />
+                android:layout_marginBottom="16dp" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="You Owe"
+                android:textColor="@color/pastel_red"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_you_owe"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:nestedScrollingEnabled="false"
+                android:layout_marginBottom="40dp" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

@@ -1,24 +1,31 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="100dp"
-    android:height="100dp"
-    android:viewportWidth="100"
-    android:viewportHeight="100">
-  <!-- Outer Rounded Rectangle (Wallet/Card shape) -->
-  <path
-      android:pathData="M15,25h70c5.52,0 10,4.48 10,10v30c0,5.52 -4.48,10 -10,10h-70c-5.52,0 -10,-4.48 -10,-10v-30c0,-5.52 4.48,-10 10,-10z"
-      android:fillColor="#3AC1F6"/>
-  <!-- Decorative Accent Card -->
-  <path
-      android:pathData="M25,20h50c4.42,0 8,3.58 8,8v44c0,4.42 -3.58,8 -8,8h-50c-4.42,0 -8,-3.58 -8,-8v-44c0,-4.42 3.58,-8 8,-8z"
-      android:fillColor="#FBCFCA"
-      android:alpha="0.8"/>
-  <!-- Currency/Coin Symbol Header -->
-  <path
-      android:pathData="M50,50m-15,0a15,15 0,1 1,30 0a15,15 0,1 1,-30 0"
-      android:fillColor="#F99ECB"/>
-  <path
-      android:pathData="M50,42v16M45,46h10M45,54h10"
-      android:strokeColor="#FFFFFF"
-      android:strokeWidth="2.5"
-      android:strokeLineCap="round"/>
+    android:width="200dp"
+    android:height="200dp"
+    android:viewportWidth="200"
+    android:viewportHeight="200">
+
+    <!-- Wallet Body -->
+    <path
+        android:pathData="M30,50h140v90h-140z"
+        android:fillColor="#5D40D6"
+        android:strokeColor="#000000"
+        android:strokeWidth="2" />
+
+    <!-- Stitching Detail -->
+    <path
+        android:pathData="M40,60 Q100,50 160,60"
+        android:strokeColor="#FFFFFF"
+        android:strokeWidth="2"
+        android:fillColor="#00000000" />
+
+    <!-- Card Peeking Out -->
+    <path
+        android:pathData="M50,70h60v35h-60z"
+        android:fillColor="#FF9A8B" />
+    <path
+        android:pathData="M55,75h20v10h-20z"
+        android:fillColor="#FFD700" />
+    <path
+        android:pathData="M85,75h20v5h-20z"
+        android:fillColor="#FFD700" />
 </vector>

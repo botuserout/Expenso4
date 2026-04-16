@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import androidx.security.crypto.EncryptedSharedPreferences;
 import androidx.security.crypto.MasterKeys;
 import com.example.expenso.database.UserDao;
+import com.example.expenso.models.User;
 
 public class PinManager {
     private static final String PREFS_NAME = "expenso_secure_prefs";
@@ -63,8 +64,8 @@ public class PinManager {
     }
 
     public boolean verifyPin(String enteredPin) {
-        String storedPin = prefs.getString(PIN_KEY, "");
-        return !storedPin.isEmpty() && storedPin.equals(enteredPin);
+        // Query database to see if any user has this PIN
+        return userDao.getUserIdByPin(enteredPin) != -1;
     }
 
     public int getUserIdByPin(String pin) {
@@ -72,14 +73,22 @@ public class PinManager {
     }
 
     public boolean isPinSetup() {
-        return prefs.getBoolean(PIN_SETUP_KEY, false);
+        // App is set up if at least one user exists in the DB
+        return userDao.checkUserExists();
     }
 
-    public void saveLoginSession(int userId, String name) {
+    public void saveLoginSession(int userId, Context context) {
+        // Fetch User Details from DB to refresh UserProfileManager Cache
+        User user = userDao.getUserDetails(userId);
+        if (user != null) {
+            UserProfileManager upm = new UserProfileManager(context);
+            upm.saveProfile(user.getName(), user.getAge(), user.getProfession(), user.getPhone(), user.getAvatar());
+        }
+
         prefs.edit()
                 .putBoolean(SESSION_KEY, true)
                 .putInt(USER_ID_KEY, userId)
-                .putString(USER_NAME_KEY, name)
+                .putString(USER_NAME_KEY, user != null ? user.getName() : "User")
                 .apply();
     }
 

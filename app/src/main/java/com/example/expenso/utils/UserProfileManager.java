@@ -60,4 +60,9 @@ public class UserProfileManager {
     public void resetProfileFlag() {
         prefs.edit().putBoolean(KEY_COMPLETED, false).apply();
     }
+
+    /** Clears all profile data (used when creating a new account). */
+    public void clearProfile() {
+        prefs.edit().clear().apply();
+    }
 }

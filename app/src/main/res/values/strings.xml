@@ -63,7 +63,7 @@
     <string name="notifications">Notifications</string>
     <string name="export_data">Export Data</string>
     <string name="import_data">Import Data</string>
-    <string name="bill_reminder">Bill Reminder</string>
+    <string name="bill_reminder">Bill Reminder(Work On Progress)</string>
     <string name="set_reminder">Set Reminder</string>
     <string name="reminder_message">Don\'t forget to pay your bill!</string>
     <string name="reminder_set_success">Reminder set successfully!</string>

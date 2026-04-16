@@ -218,6 +218,7 @@ public class SettingsActivity extends BaseActivity {
                     }
                 }
                 Toast.makeText(this, getString(R.string.csv_import_success) + " (" + count + ")", Toast.LENGTH_SHORT).show();
+                android.util.Log.d("SettingsActivity", "Successfully imported " + count + " expenses for user: " + userId);
             }
         } catch (Exception e) {
             Toast.makeText(this, R.string.csv_import_error, Toast.LENGTH_SHORT).show();

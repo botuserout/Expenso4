@@ -4,6 +4,7 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import com.example.expenso.models.User;
 
 public class UserDao {
     private DBHelper dbHelper;
@@ -71,6 +72,25 @@ public class UserDao {
             cursor.close();
         }
         return userId;
+    }
+
+    public User getUserDetails(int userId) {
+        SQLiteDatabase db = dbHelper.getReadableDatabase();
+        Cursor cursor = db.query("Users", null, "user_id = ?", 
+                new String[]{String.valueOf(userId)}, null, null, null);
+        
+        if (cursor != null && cursor.moveToFirst()) {
+            User user = new User();
+            user.setUserId(cursor.getInt(cursor.getColumnIndexOrThrow("user_id")));
+            user.setName(cursor.getString(cursor.getColumnIndexOrThrow("name")));
+            user.setAge(cursor.getInt(cursor.getColumnIndexOrThrow("age")));
+            user.setProfession(cursor.getString(cursor.getColumnIndexOrThrow("profession")));
+            user.setPhone(cursor.getString(cursor.getColumnIndexOrThrow("phone")));
+            user.setAvatar(cursor.getString(cursor.getColumnIndexOrThrow("avatar")));
+            cursor.close();
+            return user;
+        }
+        return null;
     }
 
     public int addFriendPlaceholder(String name) {

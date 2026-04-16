@@ -34,15 +34,7 @@
         android:textStyle="bold"
         android:textColor="@color/primary_color"
         android:layout_marginBottom="8dp" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Expenso"
-        android:textSize="28sp"
-        android:textStyle="bold"
-        android:textColor="@color/primary_purple"
-        android:layout_marginBottom="4dp" />
+    
 
     <!-- Welcome text — changes between Login / Setup mode -->
     <TextView
@@ -264,7 +256,17 @@
         android:text="Forgot PIN? Reset"
         android:textColor="@color/primary_purple"
         android:textSize="14sp"
-        android:paddingTop="16dp"
+        android:paddingTop="12dp" />
+
+    <TextView
+        android:id="@+id/tv_create_account"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="New Account? Create one"
+        android:textColor="@color/primary_color"
+        android:textStyle="bold"
+        android:textSize="14sp"
+        android:paddingTop="8dp"
         android:paddingBottom="16dp" />
 
 </LinearLayout>

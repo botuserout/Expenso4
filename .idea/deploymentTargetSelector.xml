@@ -4,7 +4,7 @@
     <selectionStates>
       <SelectionState runConfigName="expenso">
         <option name="selectionMode" value="DROPDOWN" />
-        <DropdownSelection timestamp="2026-04-12T13:35:03.007790500Z">
+        <DropdownSelection timestamp="2026-04-12T13:49:49.557166Z">
           <Target type="DEFAULT_BOOT">
             <handle>
               <DeviceId pluginId="PhysicalDevice" identifier="serial=10BG1U0FA8001DH" />

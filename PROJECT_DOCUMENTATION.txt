@@ -1,0 +1,1242 @@
+
+================================================================================
+              EXPENSO4 — COMPLETE PROJECT DOCUMENTATION
+              Personal Finance Manager — Android Application
+================================================================================
+Prepared for Presentation  |  Date: April 21, 2026
+Package: com.example.expenso
+Language: Java | Database: SQLite | Min SDK: Android 5.0+
+================================================================================
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 1: WHAT IS EXPENSO?
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Expenso is a personal finance management Android application that helps users:
+  - Track daily expenses by category
+  - Set and monitor monthly budgets
+  - Split bills with friends (bidirectional debt tracking)
+  - Visualize spending with charts (Pie & Bar & Line charts)
+  - Set and track savings goals
+  - Receive smart budget notifications
+  - Secure the app with a 4-digit PIN
+  - Import expense data from CSV files
+  - Switch between English and Hindi languages
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 2: PROJECT FOLDER STRUCTURE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+app/src/main/
+│
+├── AndroidManifest.xml               ← App config & permissions
+│
+├── java/com/example/expenso/
+│   ├── activities/                   ← All screens (UI Logic)
+│   │   ├── BaseActivity.java         ← Parent of all activities
+│   │   ├── LoginActivity.java        ← PIN login/setup screen
+│   │   ├── LockActivity.java         ← App lock screen
+│   │   ├── MainActivity.java         ← Dashboard (Home screen)
+│   │   ├── AddExpenseActivity.java   ← Add new expense
+│   │   ├── AddBudgetActivity.java    ← Set monthly budget
+│   │   ├── AllTransactionsActivity.java ← View all transactions
+│   │   ├── ReportsActivity.java      ← Charts & analytics
+│   │   ├── SplitExpenseActivity.java ← Bill splitting
+│   │   ├── GoalsActivity.java        ← Savings goals
+│   │   ├── SettingsActivity.java     ← App settings
+│   │   ├── UserProfileActivity.java  ← User profile
+│   │   └── ChangePinActivity.java    ← Change PIN
+│   │
+│   ├── database/                     ← SQLite Database Layer
+│   │   ├── DBHelper.java             ← Database creation & upgrades
+│   │   ├── ExpenseDao.java           ← Expense & budget queries
+│   │   ├── UserDao.java              ← User queries
+│   │   └── GoalDao.java              ← Goals queries
+│   │
+│   ├── models/                       ← Data Models (Plain Objects)
+│   │   ├── Expense.java              ← Expense data model
+│   │   ├── Budget.java               ← Budget data model
+│   │   ├── User.java                 ← User data model
+│   │   ├── Goal.java                 ← Goal data model
+│   │   └── SharedExpense.java        ← Split bill data model
+│   │
+│   ├── adapters/                     ← RecyclerView Adapters
+│   │   ├── ExpenseAdapter.java       ← Renders expense list items
+│   │   ├── GoalAdapter.java          ← Renders goal list items
+│   │   └── SharedExpenseAdapter.java ← Renders split bill items
+│   │
+│   ├── utils/                        ← Helper Classes
+│   │   ├── PinManager.java           ← PIN & session management
+│   │   ├── UserProfileManager.java   ← Profile data storage
+│   │   ├── NotificationHelper.java   ← Push notification builder
+│   │   ├── SmartNotificationManager.java ← Budget alert logic
+│   │   ├── ReminderReceiver.java     ← Alarm broadcast receiver
+│   │   ├── Constants.java            ← App-wide constants
+│   │   └── DateUtils.java            ← Date helper utilities
+│   │
+│   └── workers/
+│       └── SmartRemindersWorker.java ← Background daily reminder task
+│
+└── res/
+    ├── layout/                       ← Screen XML layouts (15 files)
+    └── values/                       ← Colors, themes, strings
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 3: DATABASE STRUCTURE (SQLite — expenso.db)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+The app uses 6 SQLite tables:
+
+TABLE: Users
+  - user_id (INTEGER PRIMARY KEY AUTOINCREMENT)
+  - name (TEXT)
+  - pin_hash (TEXT)            ← Stores the 4-digit PIN
+  - age (INTEGER)
+  - profession (TEXT)
+  - phone (TEXT)
+  - avatar (TEXT)              ← Avatar drawable name
+
+TABLE: Expenses
+  - expense_id (INTEGER PRIMARY KEY AUTOINCREMENT)
+  - user_id (INTEGER)          ← Foreign key → Users
+  - amount (REAL)
+  - category (TEXT)            ← Food, Transport, Shopping, etc.
+  - date (TEXT)                ← Format: yyyy-MM-dd
+  - description (TEXT)
+
+TABLE: SharedExpenses
+  - shared_id (INTEGER PRIMARY KEY AUTOINCREMENT)
+  - expense_id (INTEGER)       ← Links to the parent expense
+  - payer_id (INTEGER)         ← Who owes money
+  - owes_to_id (INTEGER)       ← Who is owed money
+  - amount (REAL)
+  - status (TEXT)              ← "PENDING" or "PAID"
+
+TABLE: Budgets
+  - budget_id (INTEGER PRIMARY KEY AUTOINCREMENT)
+  - user_id (INTEGER)
+  - category (TEXT)            ← "Total" for monthly budget
+  - limit_amount (REAL)
+  - period (TEXT)              ← "monthly"
+
+TABLE: Goals
+  - goal_id (INTEGER PRIMARY KEY AUTOINCREMENT)
+  - user_id (INTEGER)
+  - name (TEXT)
+  - target_amount (REAL)
+  - saved_amount (REAL)
+  - icon (TEXT)                ← Emoji or drawable name
+
+TABLE: Categories
+  - category_id (INTEGER PRIMARY KEY AUTOINCREMENT)
+  - name (TEXT)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 4: HOW THE APP WORKS — USER FLOW
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+STEP 1 — APP LAUNCH
+  → Android opens MainActivity (the launcher activity)
+  → BaseActivity.onCreate() runs first → applies language setting
+  → MainActivity checks: Is the user logged in? (pinManager.isLoggedIn())
+      • No PIN set yet   → Go to LoginActivity (SETUP MODE)
+      • PIN set, no session → Go to LoginActivity (LOGIN MODE)
+      • Valid session    → Show Dashboard
+
+STEP 2 — LOGIN / SETUP
+  LoginActivity handles TWO modes:
+  a) Setup Mode (First time):
+     - User enters a 4-digit PIN
+     - App asks to confirm the PIN
+     - On match → pinManager.savePin() stores PIN in DB and EncryptedSharedPreferences
+     - If no profile → redirect to UserProfileActivity
+     - Else → redirect to MainActivity
+
+  b) Login Mode (Returning user):
+     - User enters PIN
+     - pinManager.verifyPin() looks up the PIN in the Users table
+     - On success → pinManager.saveLoginSession() sets SESSION_KEY = true
+     - Redirect to MainActivity
+
+STEP 3 — DASHBOARD (MainActivity)
+  - Shows: Balance, Income (Budget), Total Spending, Savings estimate
+  - Shows: "You Are Owed" and "You Owe" split bill amounts
+  - Shows: Budget Meter (ProgressBar with color based on usage %)
+  - Shows: Balance Trend Line Chart (last 7 days)
+  - Shows: Top savings goal preview
+  - Shows: Last 5 recent expenses
+  - All data loaded in background thread to keep UI smooth
+
+STEP 4 — ADD EXPENSE
+  User taps "+" FAB or bottom nav "Add":
+  → AddExpenseActivity
+  - Select category (Food, Transport, Shopping, Entertainment, Bills, Health, Education, Other)
+  - Enter amount, optional notes/location
+  - Select date (defaults to today)
+  - Optional: Toggle "Split Expense" → Enter number of people → App calculates each person's share
+  - Save → Creates an Expense record in DB
+  - Triggers SmartNotificationManager to check budget warnings
+  - If split: Creates SharedExpense records for each extra person
+
+STEP 5 — SET BUDGET
+  → AddBudgetActivity
+  - User enters a monthly budget amount
+  - Saved as Budget with category = "Total"
+  - Dashboard updates to show meter against this limit
+
+STEP 6 — REPORTS
+  → ReportsActivity
+  - Pie Chart: Spending by category (from ExpenseDao.getCategorySpending)
+  - Bar Chart: Monthly spending trend (from ExpenseDao.getMonthlySpending)
+  - Summary: Total spent, top spending category
+  - All charts use MPAndroidChart library
+
+STEP 7 — SPLIT EXPENSE
+  → SplitExpenseActivity
+  - Enter total amount, people count (2–4)
+  - Choose: Split Equally OR Custom split per person
+  - Choose: "I Paid" OR "Someone Else Paid" (bidirectional debt)
+  - If "I Paid" → Friends owe me → payer_id=friend, owes_to_id=me
+  - If "Someone Else Paid" → I owe them → payer_id=me, owes_to_id=friend
+  - History shown in two sections:
+      • "Owed To You" — others pending to pay you
+      • "You Owe" — you pending to pay someone
+  - Settle Up button → marks status as "PAID"
+
+STEP 8 — GOALS
+  → GoalsActivity
+  - User creates savings goals with a name, target amount, and icon
+  - All goals shown with a progress bar (saved vs target)
+  - Top goal previewed on the Dashboard
+  - Goals can be updated (add to saved amount) or deleted
+
+STEP 9 — SETTINGS
+  → SettingsActivity
+  - Language toggle (English / हिंदी) — restarts app to apply globally
+  - Import Data from CSV file (columns: Amount, Category, Date, Description)
+  - Bill Reminder — sets a system alarm via AlarmManager
+  - Edit Profile → UserProfileActivity
+  - Set Budget → AddBudgetActivity
+  - Security/Change PIN → ChangePinActivity
+  - Logout → clears session, redirects to Login
+
+STEP 10 — BACKGROUND WORK
+  → SmartRemindersWorker runs every 24 hours via WorkManager
+  - Checks if budget usage ≥ 90% → sends "Budget Reminder" notification
+  - Calculates safe daily spend suggestion → sends notification
+  → BaseActivity.schedulePeriodicReminders() sets this up on every launch
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 5: FILE-BY-FILE EXPLANATION
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+════════════════════════════════════════════
+  ACTIVITIES (Screens)
+════════════════════════════════════════════
+
+FILE: BaseActivity.java
+  Type: Abstract class (parent of all activities)
+  Purpose:
+    - Holds a shared `pinManager` object used by all child activities
+    - Applies the saved language (English/Hindi) on every screen launch
+    - Sets up the lock screen guard: if app goes to background, locks it
+    - Schedules the daily SmartRemindersWorker using WorkManager
+    - Creates the notification channel on first launch
+  Key Methods:
+    - onCreate()          → Initializes PinManager, applies locale
+    - schedulePeriodicReminders() → Registers 24h background job
+    - onStop()            → Detects if app went to background (lock guard)
+    - onResume()          → Checks if app is locked → shows LockActivity
+    - applyLocale()       → Sets the app language from saved preference
+    - attachBaseContext()  → Ensures language is applied before layouts inflate
+
+────────────────────────────────────────────
+
+FILE: LoginActivity.java
+  Type: Activity (Screen)
+  Purpose: Handles first-time PIN setup and returning user login
+  Key Methods:
+    - onCreate()           → Checks setup vs login mode
+    - initializeViews()    → Binds PIN dot display, "Forgot PIN", "New Account"
+    - setupKeypadListeners() → Handles 0–9 keypad, backspace, enter
+    - handleSetupPin()     → Two-step PIN creation (enter, then confirm)
+    - verifyPin()          → Validates PIN against DB, creates session
+    - goToDashboard()      → Redirects to profile setup or MainActivity
+    - updatePinDisplay()   → Fills dots (●) as user types
+    - updateModeUI()       → Changes subtitle text for setup vs login
+
+────────────────────────────────────────────
+
+FILE: MainActivity.java
+  Type: Activity (Main Dashboard)
+  Purpose: The home screen — shows financial overview
+  Key Methods:
+    - onCreate()           → Auth check, view setup, data load
+    - initializeViews()    → Binds all dashboard UI elements
+    - setupRecyclerView()  → Initializes the recent expenses list
+    - setupClickListeners() → Bottom nav, FAB, See All button
+    - loadDashboardData()  → Background thread: fetches expenses, budget,
+                             owed/owe amounts → posts to UI thread
+    - setupBalanceTrend()  → Builds the Line Chart from daily spending data
+    - updateBudgetMeter()  → Updates the circular progress bar with color logic:
+                              < 70%  → Green (Safe)
+                              70-89% → Orange (Warning)
+                              90-100% → Red (Critical)
+                              > 100%  → Dark Red (Exceeded)
+    - onResume()           → Refreshes data when returning from other screens
+
+────────────────────────────────────────────
+
+FILE: AddExpenseActivity.java
+  Type: Activity (Add Expense Form)
+  Purpose: Allows user to log a new expense with optional bill splitting
+  Key Methods:
+    - initializeViews()    → Binds amount, location, notes, date inputs
+    - setupClickListeners() → Links all buttons and the split toggle switch
+    - setupCategoryListeners() → 8 category buttons (Food, Transport, etc.)
+    - selectCategory()     → Highlights selected category card
+    - showDatePicker()     → Opens Android DatePickerDialog
+    - updateDateButton()   → Updates button text with formatted date
+    - setDefaultDate()     → Sets today's date on load/resume
+    - updateSplitAmount()  → Real-time calculation: amount ÷ people count
+    - saveExpense()        → Validates inputs → saves to DB in background thread
+                           → if split: creates SharedExpense records
+                           → triggers SmartNotificationManager
+    - clearForm()          → Resets all fields after successful save
+
+────────────────────────────────────────────
+
+FILE: AddBudgetActivity.java
+  Type: Activity (Set Budget)
+  Purpose: Lets user set or update monthly budget limit
+  Key Methods:
+    - loadExistingBudget() → Fetches current budget from DB to pre-fill input
+    - saveBudget()         → Validates amount > 0 → inserts or updates Budget in DB
+    - initializeViews()    → Binds amount input and save/back buttons
+
+────────────────────────────────────────────
+
+FILE: AllTransactionsActivity.java
+  Type: Activity (Full Transaction History)
+  Purpose: Shows all expenses with category filter and sort options
+  Key Methods:
+    - setupSpinners()      → Creates dropdown for category filter + sort options
+    - setupRecyclerView()  → Initializes RecyclerView with ExpenseAdapter
+    - loadData()           → Fetches ALL expenses for user from DB (background)
+    - applyFiltersAndSort() → Filters by selected category, sorts by:
+                              Newest | Oldest | Amount High→Low | Amount Low→High
+
+────────────────────────────────────────────
+
+FILE: ReportsActivity.java
+  Type: Activity (Analytics/Charts)
+  Purpose: Visual spending reports using MPAndroidChart library
+  Key Methods:
+    - loadReportData()     → Background thread: fetches category & monthly data
+    - displaySummary()     → Shows total spent and finds top spending category
+    - setupPieChart()      → Builds donut Pie Chart from category spending map
+    - setupBarChart()      → Builds Bar Chart for monthly spending trend
+    - setupBottomNav()     → Configures bottom navigation bar
+
+────────────────────────────────────────────
+
+FILE: SplitExpenseActivity.java
+  Type: Activity (Bill Splitting)
+  Purpose: Split expenses among 2–4 people; track who owes whom
+  Key Methods:
+    - initViews()          → Binds all form fields, radio buttons, RecyclerViews
+    - loadSharedHistory()  → Fetches shared expenses from DB, splits into:
+                             owedToYouList (others owe me) and youOweList (I owe)
+    - settleExpense()      → Marks a shared expense as "PAID" and refreshes list
+    - setupListeners()     → Handles amount input, people +/- buttons,
+                             equal/custom toggle, who-paid radio selection
+    - handleSplitConfirmation() → Validates inputs, computes shares, calls save
+    - saveSplitToDatabase() → Background thread:
+                              Creates main Expense record
+                              If "I Paid": creates records where friends owe me
+                              If "Someone Else Paid": creates records where I owe
+    - updateCalculations() → Real-time equal split display per person
+    - toggleManualFields() → Shows/hides custom amount inputs
+
+────────────────────────────────────────────
+
+FILE: GoalsActivity.java
+  Type: Activity (Savings Goals)
+  Purpose: Create and track savings goals
+  Key Methods:
+    - setupToolbar()       → Adds back-navigation to toolbar
+    - setupRecyclerView()  → Sets up list with GoalAdapter
+    - loadGoals()          → Fetches all goals from GoalDao (background thread)
+    - showAddGoalDialog()  → Shows AlertDialog with name, amount, and goal type
+                             (icon selected via RadioGroup tags)
+
+────────────────────────────────────────────
+
+FILE: SettingsActivity.java
+  Type: Activity (App Settings)
+  Purpose: Language, import, reminders, security, profile, logout
+  Key Methods:
+    - initializeViews()    → Binds all UI elements; shows profile name & budget
+    - updateLanguageUI()   → Syncs toggle state from saved language preference
+    - setupClickListeners() → Wires all 8 settings action buttons
+    - importCsvData()      → Reads CSV file using OpenCSV library:
+                             Expected columns: Amount, Category, Date, Description
+                             Imports each valid row as an Expense record
+    - setBillReminder()    → Schedules a one-time alarm 10 seconds in the future
+                             (demo) via Android AlarmManager
+
+────────────────────────────────────────────
+
+FILE: UserProfileActivity.java
+  Type: Activity (Profile Setup/Edit)
+  Purpose: Collects user name, age, profession, phone, avatar
+  Key Methods:
+    - Saves data to both SQLite (UserDao) and SharedPreferences (UserProfileManager)
+    - Avatar selection from a grid of drawable options
+
+────────────────────────────────────────────
+
+FILE: ChangePinActivity.java
+  Type: Activity (Change PIN)
+  Purpose: Allows user to update their 4-digit PIN
+  Key Methods:
+    - Verifies current PIN, then asks for new PIN + confirmation
+    - Calls pinManager.updatePin() → updates both DB and SharedPreferences
+
+────────────────────────────────────────────
+
+FILE: LockActivity.java
+  Type: Activity (Lock Screen)
+  Purpose: Shown when user returns to app after going to background
+  Key Methods:
+    - Presents a PIN entry screen
+    - On correct PIN → calls PinManager.setAppUnlocked(true) → returns to app
+
+════════════════════════════════════════════
+  DATABASE LAYER
+════════════════════════════════════════════
+
+FILE: DBHelper.java
+  Type: SQLiteOpenHelper (Singleton)
+  Purpose: Central database creation and schema upgrade management
+  Key Methods:
+    - getInstance()        → Returns single shared DB instance (thread-safe Singleton)
+    - onCreate()           → Creates 6 tables when first installed
+    - onUpgrade()          → Handles versioned schema changes:
+                             v3: Full recreate (early dev)
+                             v4: Added age/profession/phone to Users; SharedExpenses table
+                             v5: Added "status" column to SharedExpenses
+                             v8: Created Goals table
+                             v9: Added "avatar" to Users
+
+────────────────────────────────────────────
+
+FILE: ExpenseDao.java
+  Type: Data Access Object (DAO)
+  Purpose: All database operations related to Expenses, Budgets, and SharedExpenses
+  Key Functions:
+
+  EXPENSE METHODS:
+    - addExpense(Expense)           → INSERT into Expenses table
+    - getAllExpenses(userId)         → Get all expenses for a user (newest first)
+    - getRecentExpenses(userId, n)  → Get last n expenses (or all if n=-1)
+    - getTotalExpenses(userId)      → SUM of all expense amounts
+    - getAverageExpense(userId)     → AVG expense amount (used for unusual detection)
+    - getCategorySpending(userId)   → Map<Category, Total> for Pie Chart
+    - getDailySpending(userId)      → Map<Date, Total> ordered by date (Line Chart)
+    - getMonthlySpending(userId)    → Map<Month, Total> for Bar Chart
+
+  SHARED EXPENSE METHODS:
+    - addSharedExpense(expId, payerId, owesToId, amount)
+                                    → INSERT into SharedExpenses with PENDING status
+    - getSharedExpenses(userId)     → Complex JOIN query: gets all records where
+                                      user is either the payer or the owed person,
+                                      also joins Users to get person names
+    - settleSharedExpense(sharedId) → UPDATE status = 'PAID'
+    - getOwedAmount(userId)         → SUM where owes_to_id = userId (people owe me)
+    - getOweAmount(userId)          → SUM where payer_id = userId (I owe others)
+
+  BUDGET METHODS:
+    - addBudget(Budget)             → INSERT into Budgets
+    - updateBudget(Budget)          → UPDATE limit_amount and period
+    - getTotalBudget(userId)        → SUM of all budget limits
+    - getBudgetByCategory(userId, category) → Fetch specific budget row
+
+────────────────────────────────────────────
+
+FILE: UserDao.java
+  Type: Data Access Object
+  Purpose: User account management in the database
+  Key Functions:
+    - addUser(name, pinHash)         → INSERT new user; returns auto-generated user_id
+    - getUserIdByPin(pinHash)        → Finds user by their PIN (for login)
+    - updateUserProfile(userId, ...) → UPDATE name, age, profession, phone, avatar
+    - updateUserPin(userId, newPin)  → UPDATE pin_hash for PIN change
+    - checkUserExists()              → Returns true if at least 1 user exists
+    - getUserIdByName(name)          → Find user by display name
+    - getUserDetails(userId)         → Get full User object for a user_id
+    - addFriendPlaceholder(name)     → Creates a dummy user record for a friend
+                                       (used in split bill for friends without accounts)
+
+────────────────────────────────────────────
+
+FILE: GoalDao.java
+  Type: Data Access Object
+  Purpose: CRUD operations for savings goals
+  Key Functions:
+    - addGoal(Goal)                  → INSERT new goal
+    - getAllGoals(userId)            → Get all goals for user (newest first)
+    - updateSavedAmount(goalId, amt) → Increments saved_amount by given amount
+    - deleteGoal(goalId)             → DELETE goal by ID
+
+════════════════════════════════════════════
+  MODELS (Data Objects)
+════════════════════════════════════════════
+
+FILE: Expense.java
+  Fields: expenseId, userId, amount, category, date, description
+  Purpose: Represents one expense record in the Expenses table
+
+FILE: Budget.java
+  Fields: budgetId, userId, category, limitAmount, period
+  Purpose: Represents a user's budget limit (one "Total" monthly budget)
+
+FILE: SharedExpense.java
+  Fields: sharedId, expenseId, payerId, owesToId, amount, status, personName
+  Purpose: Represents one shared expense record (who owes whom)
+  Note: personName is NOT stored in DB — it is fetched via JOIN
+
+FILE: User.java
+  Fields: userId, name, pinHash, age, profession, phone, avatar
+  Purpose: Represents a user (real user OR friend placeholder)
+
+FILE: Goal.java
+  Fields: goalId, userId, name, targetAmount, savedAmount, icon
+  Methods: getProgress() → returns (savedAmount / targetAmount) * 100 as int
+
+════════════════════════════════════════════
+  ADAPTERS (RecyclerView List Renderers)
+════════════════════════════════════════════
+
+FILE: ExpenseAdapter.java
+  Renders: Each expense in the Recent Expenses and All Transactions lists
+  Features:
+    - Shows category emoji icon, category name, date, amount
+    - updateExpenses(list) → Refreshes the displayed data
+
+FILE: GoalAdapter.java
+  Renders: Each savings goal with name, icon, progress bar, saved vs target
+  Features:
+    - Context menu: "Add Funds" dialog, "Delete" option
+    - updateGoals(list) → Refreshes data
+
+FILE: SharedExpenseAdapter.java
+  Renders: Each shared expense in "You Owe" / "Owed to You" sections
+  Features:
+    - Shows person name, amount, status (PENDING/PAID)
+    - "Settle Up" button → triggers settleExpense() callback
+    - updateList(list) → Refreshes data
+
+════════════════════════════════════════════
+  UTILITY CLASSES
+════════════════════════════════════════════
+
+FILE: PinManager.java
+  Purpose: Handles all PIN logic, session management, and language storage
+  Storage: Uses EncryptedSharedPreferences (AES256 encryption) with fallback
+  Key Methods:
+    - savePin(name, pin)         → Inserts new user in DB; saves pin to SecurePrefs
+    - updatePin(newPin)          → Updates pin in both DB and SecurePrefs
+    - verifyPin(pin)             → Looks up pin in DB via UserDao
+    - getUserIdByPin(pin)        → Returns userId for a given pin
+    - isPinSetup()               → Checks if any user exists in DB
+    - saveLoginSession(userId)   → Sets SESSION_KEY=true; caches user profile
+    - isLoggedIn()               → True if PIN setup AND session is active
+    - getCurrentUserId()         → Returns userId from SecurePrefs
+    - logout()                   → Clears session flags
+    - clearPin()                 → Clears all PIN data (for reset)
+    - saveLanguage(lang)         → Saves "en" or "hi"
+    - getLanguage()              → Returns current language code
+    - setAppUnlocked(bool)       → Static in-memory lock state
+    - isAppUnlocked()            → Returns current lock state
+
+────────────────────────────────────────────
+
+FILE: UserProfileManager.java
+  Purpose: Stores and retrieves user profile details
+  Storage: Uses plain SharedPreferences (separate file: "expenso_profile")
+  Key Methods:
+    - saveProfile(name, age, profession, phone, avatar) → Saves all profile fields
+    - getName()            → Gets name (truncated to 30 chars if too long)
+    - getAge()             → Returns age integer
+    - getProfession()      → Returns profession string
+    - getPhone()           → Returns phone number
+    - getAvatar()          → Returns drawable name for avatar
+    - isProfileCompleted() → True if user has filled in profile details
+    - resetProfileFlag()   → Marks profile as incomplete (for edit flow)
+    - clearProfile()       → Wipes all profile data (for new account creation)
+
+────────────────────────────────────────────
+
+FILE: NotificationHelper.java
+  Purpose: Creates and shows Android push notifications
+  Key Methods:
+    - createNotificationChannel() → Required for Android 8.0+; creates the
+                                    "expenso_smart_alerts" notification channel
+    - showNotification(context, title, message)
+                                  → Checks user preference first
+                                  → Builds notification with tap-to-open action
+                                  → Uses unique ID (timestamp) to avoid overwriting
+
+────────────────────────────────────────────
+
+FILE: SmartNotificationManager.java
+  Purpose: Analyzes spending and triggers relevant alerts after every expense
+  Key Method: checkAndTriggerSmartAlert(context, amount, category)
+    Feature 1 — Context-Aware Alert:
+      Shows remaining budget after each expense is saved
+    Feature 2 — Budget Warning System:
+      ≥ 100% → "Budget Exceeded!" notification
+      ≥  90% → "Critical Usage" notification
+      ≥  70% → "Budget Warning" notification
+    Feature 3 — Unusual Spending Detection:
+      If current expense > 2× the user's average expense → unusual alert
+
+────────────────────────────────────────────
+
+FILE: ReminderReceiver.java
+  Purpose: BroadcastReceiver for manually scheduled bill reminders
+  Triggered by: SettingsActivity.setBillReminder() via AlarmManager
+  Action: Shows a "Bill Reminder!" notification
+
+────────────────────────────────────────────
+
+FILE: SmartRemindersWorker.java
+  Purpose: Background periodic task (runs every 24 hours via WorkManager)
+  Key Logic:
+    - Fetches budget usage from DB
+    - If ≥ 90% used → Sends "Budget Reminder" notification
+    - Calculates safe daily spend (remaining ÷ 10) → Sends "Daily Advice" notification
+    - Skips if notifications disabled or no user logged in
+
+════════════════════════════════════════════
+  MANIFEST (AndroidManifest.xml)
+════════════════════════════════════════════
+
+FILE: AndroidManifest.xml
+  Purpose: App configuration file read by Android OS
+  Key Declarations:
+    - Launcher Activity: MainActivity (entry point of the app)
+    - All 11 activities registered
+    - ReminderReceiver registered for bill reminder alarms
+    - Permission: POST_NOTIFICATIONS (needed for Android 13+ notifications)
+    - Theme: Theme.Expenso (defined in themes.xml)
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 6: ALL FUNCTIONS USED — COMPLETE REFERENCE
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+BASEACTIVITY:
+  onCreate()                    Initializes PinManager; applies locale; creates notification channel; schedules background reminders
+  schedulePeriodicReminders()   Registers SmartRemindersWorker to run every 24 hours via WorkManager
+  onStart()                     Increments active activity counter (for background detection)
+  onStop()                      Decrements counter; if 0 after 700ms delay → locks app
+  onResume()                    Checks lock state; redirects to LockActivity if app is locked
+  applyLocale()                 Applies saved language setting to this activity's resources
+  attachBaseContext()            Intercepts context to apply language BEFORE layout inflation
+  updateBaseContextLocale()      Creates a language-configured Context object
+
+LOGINACTIVITY:
+  onCreate()                    Detects setup vs login mode; calls setup methods
+  initializeViews()              Binds PIN digit views; sets up Forgot PIN and New Account links
+  updateModeUI()                Updates screen text/visibility based on current mode
+  setupKeypadListeners()         Attaches click listeners to all 10 number buttons + backspace + enter
+  handleSetupPin()               Manages two-step PIN creation (first entry → confirm → save)
+  verifyPin()                    Validates PIN vs database; starts session on success
+  goToDashboard()                Unlocks app; routes to UserProfileActivity or MainActivity
+  updatePinDisplay()             Visually updates the 4 PIN dot indicators
+
+MAINACTIVITY:
+  onCreate()                    Auth check; initializes DAO, views, recycler, listeners, data load
+  initializeViews()             Binds all 15+ dashboard UI elements; sets greeting text
+  setupRecyclerView()           Configures the recent expenses RecyclerView with LinearLayoutManager
+  setupClickListeners()         Sets up FAB, "See All" button, and bottom navigation switching
+  loadDashboardData()           Background thread: fetches expenses, totals, owed/owe, budget; updates UI
+  setupBalanceTrend()           Builds MPAndroidChart LineChart from daily spending data
+  updateBudgetMeter()           Animates circular ProgressBar; applies color coding based on usage %
+  onResume()                    Refreshes dashboard data and avatar when returning to screen
+
+ADDEXPENSEACTIVITY:
+  onCreate()                    Sets up layout, initializes DAO, calendar, views, listeners, default date
+  onResume()                    Refreshes date to current date on return
+  initializeViews()             Binds all form input fields
+  setupClickListeners()         Wires date picker, payment method, split toggle, save button, back button, bottom nav
+  setupCategoryListeners()      Attaches click listeners to all 8 category chips
+  selectCategory()              Highlights selected category; resets previous selection
+  showDatePicker()              Displays Android DatePickerDialog with current date pre-selected
+  updateDateButton()            Formats and displays selected date on the button
+  setDefaultDate()              Resets calendar to today and updates the date display
+  updateSplitAmount()           Dynamically calculates and shows per-person share as user types
+  saveExpense()                 Validates all fields; saves expense to DB on background thread; handles splitting and notifications
+  clearForm()                   Resets all UI fields to default state after save
+
+ADDBUDGETACTIVITY:
+  onCreate()                    Initializes views, listeners, and loads existing budget
+  initializeViews()             Binds amount input and buttons
+  setupClickListeners()         Wires back button and save button
+  loadExistingBudget()          Fetches current budget from DB to pre-populate form (background thread)
+  saveBudget()                  Validates amount; inserts or updates budget record on background thread
+
+ALLTRANSACTIONSACTIVITY:
+  onCreate()                    Initializes DAO, spinners, RecyclerView
+  setupSpinners()               Creates category filter dropdown and sort order dropdown
+  setupRecyclerView()           Configures ExpenseAdapter
+  loadData()                    Fetches all user expenses from DB on background thread
+  applyFiltersAndSort()         Filters by category; sorts by date or amount using Collections.sort
+  onResume()                    Reloads data when returning to screen
+
+REPORTSACTIVITY:
+  onCreate()                    Initializes charts, DAO, PinManager; loads data
+  initializeViews()             Binds PieChart, BarChart, and summary TextViews
+  loadReportData()              Background thread: fetches category and monthly spending maps
+  displaySummary()              Finds and displays total spent and top spending category
+  setupPieChart()               Builds PieChart with category names and amounts; animates on load
+  setupBarChart()               Builds BarChart with month labels and spending amounts; animates on load
+  setupBottomNav()              Configures bottom navigation
+
+SPLITEXPENSEACTIVITY:
+  onCreate()                    Initializes DAOs, PinManager, views, listeners, bottom nav
+  onResume()                    Reloads split history on screen return
+  initViews()                   Binds all form fields, radio buttons, name inputs, RecyclerViews
+  loadSharedHistory()           Fetches shared expenses; separates into owed-to-you and you-owe lists
+  settleExpense()               Marks shared expense as PAID; refreshes history list
+  setupListeners()              Wires amount input, people +/- buttons, equal/custom toggle, who-paid radio
+  toggleManualFields()          Enables/disables custom amount share inputs
+  handleSplitConfirmation()     Validates all inputs; computes shares (equal or custom); calls save
+  saveSplitToDatabase()         Background thread: Creates expense record; Creates SharedExpense records for each participant with correct payer/owes-to logic
+  updateCalculations()          Real-time display of per-person equal share
+  setupBottomNav()              Configures bottom navigation
+
+GOALSACTIVITY:
+  onCreate()                    Initializes DAO, PinManager, toolbar, RecyclerView, FAB; loads goals
+  setupToolbar()                Adds back-navigation button to the toolbar
+  setupRecyclerView()           Configures GoalAdapter with empty list initially
+  loadGoals()                   Fetches all goals from DB on background thread; updates adapter
+  showAddGoalDialog()           Inflates dialog view; collects name, amount, icon type; creates Goal on confirm
+
+SETTINGSACTIVITY:
+  onCreate()                    Initializes DAO, views; applies language UI state
+  initializeViews()             Binds all setting row views; shows profile info and budget value
+  setupClickListeners()         Wires 8 settings: language toggle, import, reminder, profile, budget, security, about, logout
+  updateLanguageUI()            Sets toggle checked state and language label text
+  importCsvData()               Opens CSV via URI stream; reads rows with OpenCSV; imports each valid row as Expense
+  setBillReminder()             Creates AlarmManager one-shot alarm 10 seconds from now; shows confirmation toast
+
+DBHELPER:
+  getInstance()                 Singleton getter — creates one shared DBHelper instance
+  onCreate()                    Creates all 6 database tables on first install
+  onUpgrade()                   Applies incremental schema changes by version number
+
+EXPENSEDAO:
+  addExpense()                  INSERT expense into Expenses table; logs result
+  getAllExpenses()               Returns all expenses for user (newest first)
+  getRecentExpenses()           Returns last N expenses; uses "LIMIT" clause
+  getTotalExpenses()            SELECT SUM(amount) for user
+  getAverageExpense()           SELECT AVG(amount) for user
+  getCategorySpending()         SELECT category, SUM grouped by category
+  getDailySpending()            SELECT date, SUM grouped by date ordered ASC (LinkedHashMap preserves order)
+  getMonthlySpending()          SELECT strftime('%Y-%m', date), SUM grouped by month
+  addSharedExpense()            INSERT into SharedExpenses with PENDING status
+  getSharedExpenses()           Complex JOIN: gets all shared records + person names for this user
+  settleSharedExpense()         UPDATE status = 'PAID' for given shared_id
+  getOwedAmount()               SUM where owes_to_id = userId AND status = PENDING
+  getOweAmount()                SUM where payer_id = userId AND status = PENDING
+  addBudget()                   INSERT budget record
+  updateBudget()                UPDATE limit_amount for given user + category
+  getTotalBudget()              SELECT SUM(limit_amount) for user
+  getBudgetByCategory()         SELECT single budget row for user + category
+
+USERDAO:
+  addUser()                     INSERT new user; returns auto-generated user_id
+  getUserIdByPin()              Query Users by pin_hash; returns user_id or -1
+  updateUserProfile()           UPDATE name, age, profession, phone, avatar
+  updateUserPin()               UPDATE pin_hash; returns true if 1+ row updated
+  checkUserExists()             SELECT count(*) FROM Users; returns true if > 0
+  getUserIdByName()             Query Users by name; returns user_id or -1
+  getUserDetails()              Full SELECT for one user; returns User object
+  addFriendPlaceholder()        INSERT dummy user with pin_hash='FRIEND_PLACEHOLDER' for split bill friends
+
+GOALDAO:
+  addGoal()                     INSERT new goal into Goals table
+  getAllGoals()                  SELECT all goals for user ordered by goal_id DESC
+  updateSavedAmount()           SQL: UPDATE saved_amount = saved_amount + ? for goalId
+  deleteGoal()                  DELETE goal by goalId
+
+PINMANAGER:
+  PinManager()                  Constructor: creates EncryptedSharedPreferences (AES256); fallback to plain prefs
+  savePin()                     Adds user to DB; saves pin, userId, name to encrypted prefs
+  updatePin()                   Updates pin in DB + encrypted prefs
+  verifyPin()                   Delegates to UserDao.getUserIdByPin
+  getUserIdByPin()              Delegates to UserDao
+  isPinSetup()                  Checks if any user exists in DB via UserDao
+  saveLoginSession()            Fetches user from DB; refreshes UserProfileManager cache; saves session flag
+  isLoggedIn()                  True if isPinSetup && SESSION_KEY == true
+  getCurrentUserId()            Reads USER_ID_KEY from encrypted prefs
+  getUserName()                 Reads USER_NAME_KEY from encrypted prefs
+  logout()                      Sets SESSION_KEY=false, USER_ID_KEY=-1
+  clearPin()                    Removes pin, name, sets setup and session flags to false
+  saveLanguage()                Saves language code ("en" or "hi") to encrypted prefs
+  getLanguage()                 Reads language code; defaults to "en"
+  isNotificationsEnabled()      Reads boolean preference for notification toggle
+  setNotificationsEnabled()     Saves notification enabled/disabled preference
+  isAppUnlocked()               Returns static boolean lock state
+  setAppUnlocked()              Sets static boolean lock state
+
+USERPROFILEMANAGER:
+  saveProfile()                 Saves name, age, profession, phone, avatar into SharedPreferences; marks completed
+  getName()                     Returns name (max 30 chars)
+  getAge()                      Returns age integer
+  getProfession()               Returns profession string
+  getPhone()                    Returns phone string
+  getAvatar()                   Returns avatar drawable name
+  isProfileCompleted()          Returns true if profile was previously saved
+  resetProfileFlag()            Sets completed flag to false (for re-entry flow)
+  clearProfile()                Clears all stored profile data
+
+NOTIFICATIONHELPER:
+  createNotificationChannel()   Creates "expenso_smart_alerts" channel (Android 8.0+ requirement)
+  showNotification()            Checks notification preference; builds and shows notification; auto-dismisses on tap
+
+SMARTNOTIFICATIONMANAGER:
+  checkAndTriggerSmartAlert()   Runs 3 alert checks after each expense:
+                                1. Context-aware alert: remaining budget
+                                2. Budget threshold alert: 70/90/100% warnings
+                                3. Unusual spending: if expense > 2× average
+
+REMINDERSWORKER (SmartRemindersWorker):
+  doWork()                      Periodic job: checks budget usage; sends ≥90% reminder; sends daily safe-spend advice
+
+EXPENSEADAPTER:
+  onCreateViewHolder()          Inflates item_expense.xml layout
+  onBindViewHolder()            Binds expense data (icon, category, date, amount) to view
+  updateExpenses()              Clears old list; adds new data; calls notifyDataSetChanged
+
+GOALADAPTER:
+  onCreateViewHolder()          Inflates item_goal.xml layout
+  onBindViewHolder()            Shows icon, name, progress bar, saved/target amounts; wire funds/delete context menu
+  updateGoals()                 Refreshes data and notifies adapter
+
+SHAREDEXPENSEADAPTER:
+  onCreateViewHolder()          Inflates item_shared_expense.xml layout
+  onBindViewHolder()            Shows person name, amount, status; wires "Settle Up" button
+  updateList()                  Refreshes list data and notifies adapter
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 7: LIBRARIES USED — FULL DETAILS
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+All libraries are declared in: gradle/libs.versions.toml
+All are added to: app/build.gradle under the dependencies { } block
+
+Build Tool Version: Android Gradle Plugin (AGP) 8.13.2
+Java Version: Java 17
+Min SDK: 28 (Android 9.0 Pie)  |  Target SDK: 36
+
+
+════════════════════════════════════════════════════════════════════════════
+  LIBRARY 1: AndroidX AppCompat
+════════════════════════════════════════════════════════════════════════════
+  Name in build.gradle : libs.appcompat
+  Group ID             : androidx.appcompat
+  Artifact ID          : appcompat
+  Version              : 1.7.1
+  Gradle Line          : implementation libs.appcompat
+
+  What It Does:
+    AppCompat is a backward-compatibility library from Google's AndroidX suite.
+    It ensures that modern Android UI components (like Toolbars, ActionBars,
+    Dialogs) work consistently across older Android versions.
+
+  Used In This Project For:
+    - AppCompatActivity: All activities (BaseActivity, MainActivity, etc.)
+      extend AppCompatActivity (from AppCompat) instead of the raw Activity class.
+    - Toolbar support in GoalsActivity (setSupportActionBar).
+    - AlertDialog.Builder in GoalsActivity for the "Add Goal" dialog.
+    - Ensures consistent styling across all screens.
+
+
+════════════════════════════════════════════════════════════════════════════
+  LIBRARY 2: Material Design Components
+════════════════════════════════════════════════════════════════════════════
+  Name in build.gradle : libs.material
+  Group ID             : com.google.android.material
+  Artifact ID          : material
+  Version              : 1.13.0
+  Gradle Line          : implementation libs.material
+
+  What It Does:
+    Google's official Material Design library. Provides pre-built, styled
+    UI components that follow Material Design 3 (M3) guidelines — modern,
+    beautiful, and consistent components out of the box.
+
+  Used In This Project For:
+    - BottomNavigationView: The 5-tab bottom bar (Home, Add, Split, Reports, Settings)
+      — used in MainActivity, AddExpenseActivity, ReportsActivity,
+        SplitExpenseActivity, SettingsActivity.
+    - FloatingActionButton (FAB): The "+" button on the Dashboard to add expenses.
+    - ExtendedFloatingActionButton: The "Add Goal" button in GoalsActivity.
+    - TextInputEditText: Input fields in GoalsActivity dialog.
+    - Switch: Language toggle in SettingsActivity; Split toggle in AddExpenseActivity.
+    - Theme.Material3: The base app theme defined in themes.xml.
+
+
+════════════════════════════════════════════════════════════════════════════
+  LIBRARY 3: AndroidX Activity
+════════════════════════════════════════════════════════════════════════════
+  Name in build.gradle : libs.activity
+  Group ID             : androidx.activity
+  Artifact ID          : activity
+  Version              : 1.13.0
+  Gradle Line          : implementation libs.activity
+
+  What It Does:
+    Provides the modern Activity API for AndroidX. Includes support for
+    the Activity Result API and Edge-to-Edge display handling.
+
+  Used In This Project For:
+    - EdgeToEdge.enable(this): Called in every activity to make the app
+      display content behind the status bar and navigation bar for a
+      full-screen, immersive look.
+    - ActivityResultLauncher: Used in SettingsActivity to launch the
+      file picker (CSV import) and receive the result:
+        registerForActivityResult(new ActivityResultContracts.GetContent(), ...)
+
+
+════════════════════════════════════════════════════════════════════════════
+  LIBRARY 4: AndroidX ConstraintLayout
+════════════════════════════════════════════════════════════════════════════
+  Name in build.gradle : libs.constraintlayout
+  Group ID             : androidx.constraintlayout
+  Artifact ID          : constraintlayout
+  Version              : 2.2.1
+  Gradle Line          : implementation libs.constraintlayout
+
+  What It Does:
+    A flexible layout system that allows complex UI designs without nesting
+    multiple ViewGroups. Views are positioned relative to each other using
+    constraint rules, making layouts flat and efficient.
+
+  Used In This Project For:
+    - Root layout container in almost all XML layout files:
+        activity_main.xml, activity_add_expense.xml, activity_login.xml,
+        activity_reports.xml, activity_settings.xml, etc.
+    - Allows views like cards, charts, and buttons to be precisely
+      positioned relative to screen edges and each other.
+
+
+════════════════════════════════════════════════════════════════════════════
+  LIBRARY 5: AndroidX Security Crypto (EncryptedSharedPreferences)
+════════════════════════════════════════════════════════════════════════════
+  Name in build.gradle : libs.security.crypto
+  Group ID             : androidx.security
+  Artifact ID          : security-crypto
+  Version              : 1.0.0
+  Gradle Line          : implementation libs.security.crypto
+
+  What It Does:
+    Provides AES256-encrypted versions of Android's SharedPreferences.
+    All keys and values are encrypted at rest using AES256-SIV (for keys)
+    and AES256-GCM (for values), powered by Android Keystore.
+
+  Used In This Project For:
+    - PinManager.java: The MOST SECURITY-CRITICAL class in the app.
+      The user's PIN, session state, user ID, and language preference
+      are all stored in EncryptedSharedPreferences.
+    - MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC): Creates/retrieves
+      the master encryption key from the Android Keystore.
+    - EncryptedSharedPreferences.create(...): Creates the encrypted prefs file
+      named "expenso_secure_prefs".
+    - Has a fallback to plain SharedPreferences if encryption fails (e.g.,
+      on emulators or devices with partial Keystore support).
+
+  Security Keys Stored:
+    - user_pin          : The 4-digit PIN
+    - user_logged_in    : Session flag (true/false)
+    - current_user_id   : Logged-in user's ID
+    - user_name         : User's display name
+    - app_language      : "en" or "hi"
+
+
+════════════════════════════════════════════════════════════════════════════
+  LIBRARY 6: AndroidX RecyclerView
+════════════════════════════════════════════════════════════════════════════
+  Name in build.gradle : libs.recyclerview
+  Group ID             : androidx.recyclerview
+  Artifact ID          : recyclerview
+  Version              : 1.3.2
+  Gradle Line          : implementation libs.recyclerview
+
+  What It Does:
+    RecyclerView is an advanced, high-performance list/grid widget.
+    It "recycles" (reuses) view holders as the user scrolls, keeping
+    memory usage low even for very long lists.
+
+  Used In This Project For:
+    - MainActivity: Recent 5 expenses list (ExpenseAdapter).
+    - AllTransactionsActivity: Full expense history list.
+    - SplitExpenseActivity: Two RecyclerViews — "Owed To You" list
+      and "You Owe" list (both use SharedExpenseAdapter).
+    - GoalsActivity: Savings goals list (GoalAdapter).
+
+  Adapters Used:
+    - ExpenseAdapter    → Renders expense rows
+    - GoalAdapter       → Renders goal rows with progress bars
+    - SharedExpenseAdapter → Renders split bill rows with Settle Up button
+
+
+════════════════════════════════════════════════════════════════════════════
+  LIBRARY 7: MPAndroidChart (PhilJay)
+════════════════════════════════════════════════════════════════════════════
+  Name in build.gradle : libs.mpandroidchart
+  Group ID             : com.github.PhilJay
+  Artifact ID          : MPAndroidChart
+  Version              : v3.1.0
+  Gradle Line          : implementation libs.mpandroidchart
+  Source               : GitHub — https://github.com/PhilJay/MPAndroidChart
+
+  What It Does:
+    The most popular open-source charting library for Android. Supports
+    Line charts, Bar charts, Pie charts, Scatter charts, Candle charts,
+    and more. All charts support animations, touch gestures, and
+    custom formatting.
+
+  Used In This Project For:
+
+    a) LINE CHART (MainActivity — Balance Trend):
+       - Class: LineChart
+       - Shows remaining balance day-by-day as a smooth curved line
+       - Uses CUBIC_BEZIER mode for smooth curves
+       - Filled area below the line with semi-transparent color
+       - X-axis shows dates in dd/MM format
+       - Animates with animateX(1000) — 1 second animation
+       - Data Source: ExpenseDao.getDailySpending()
+
+    b) PIE CHART (ReportsActivity — Category Distribution):
+       - Class: PieChart
+       - Donut-style chart (holeRadius = 40%)
+       - Shows percentage of spending per category
+       - Uses ColorTemplate.MATERIAL_COLORS for slice colors
+       - Center label: "Categories"
+       - Animates with animateY(1000)
+       - Data Source: ExpenseDao.getCategorySpending()
+
+    c) BAR CHART (ReportsActivity — Monthly Trends):
+       - Class: BarChart
+       - Vertical bars for each month's total spending
+       - X-axis shows month labels (yyyy-MM format)
+       - Animates with animateY(1000)
+       - Data Source: ExpenseDao.getMonthlySpending()
+
+  Key Classes Used:
+    LineChart, LineData, LineDataSet, Entry
+    PieChart, PieData, PieDataSet, PieEntry
+    BarChart, BarData, BarDataSet, BarEntry
+    XAxis, Legend, ValueFormatter
+
+
+════════════════════════════════════════════════════════════════════════════
+  LIBRARY 8: OpenCSV
+════════════════════════════════════════════════════════════════════════════
+  Name in build.gradle : libs.opencsv
+  Group ID             : com.opencsv
+  Artifact ID          : opencsv
+  Version              : 5.9
+  Gradle Line          : implementation libs.opencsv
+
+  What It Does:
+    A simple, powerful Java library for reading and writing CSV (Comma-
+    Separated Values) files. Handles quoted fields, different delimiters,
+    and multiline values properly.
+
+  Used In This Project For:
+    - SettingsActivity.importCsvData(): Allows the user to import bulk
+      expense data from a CSV file stored on their device.
+    - The user picks a .csv file via the Android file picker.
+    - OpenCSV's CSVReader reads the file line by line.
+    - Expected CSV format: Amount, Category, Date (yyyy-MM-dd), Description
+    - Each valid row is parsed and inserted as an Expense in the database.
+    - Invalid rows (bad number format) are silently skipped.
+
+  Key Class Used:
+    CSVReader — wraps an InputStreamReader to parse each CSV row
+    as a String[] array.
+
+
+════════════════════════════════════════════════════════════════════════════
+  LIBRARY 9: AndroidX WorkManager
+════════════════════════════════════════════════════════════════════════════
+  Name in build.gradle : libs.work.runtime
+  Group ID             : androidx.work
+  Artifact ID          : work-runtime
+  Version              : 2.10.0
+  Gradle Line          : implementation libs.work.runtime
+
+  What It Does:
+    WorkManager is Android's recommended solution for running deferrable,
+    guaranteed background work. Unlike raw threads or AlarmManager, it
+    survives app restarts and device reboots, and respects battery
+    optimization (Doze mode).
+
+  Used In This Project For:
+    - BaseActivity.schedulePeriodicReminders(): Registers a periodic task
+      to run every 24 HOURS.
+    - The task is given the unique name "expenso_daily_reminders" so it
+      is never duplicated (uses ExistingPeriodicWorkPolicy.KEEP).
+    - The actual work is done by SmartRemindersWorker.doWork():
+        • Checks budget usage (≥90% → sends warning notification)
+        • Calculates safe daily spending advice and sends notification
+
+  Key Classes Used:
+    PeriodicWorkRequest.Builder  → Builds the 24-hour repeating task
+    WorkManager.getInstance()    → Gets the singleton WorkManager
+    enqueueUniquePeriodicWork()  → Schedules without duplicates
+    Worker (SmartRemindersWorker extends Worker)
+    Result.success()             → Reports task completed successfully
+
+
+════════════════════════════════════════════════════════════════════════════
+  ANDROID BUILT-IN APIs (No extra dependency needed)
+════════════════════════════════════════════════════════════════════════════
+
+  These are part of the Android SDK itself — no library import needed:
+
+  1. SQLite (android.database.sqlite)
+     Classes: SQLiteDatabase, SQLiteOpenHelper, Cursor, ContentValues
+     Used In: DBHelper, ExpenseDao, UserDao, GoalDao
+     Purpose: Local offline database for all app data
+
+  2. SharedPreferences (android.content.SharedPreferences)
+     Used In: UserProfileManager (plain prefs for profile data)
+     Purpose: Simple key-value storage for profile fields
+
+  3. AlarmManager (android.app.AlarmManager)
+     Used In: SettingsActivity.setBillReminder()
+     Purpose: Schedules a one-shot alarm for bill reminders
+
+  4. NotificationManager + NotificationCompat (androidx.core.app)
+     Used In: NotificationHelper.showNotification()
+     Purpose: Builds and displays push notifications
+
+  5. NotificationChannel (android.app.NotificationChannel)
+     Used In: NotificationHelper.createNotificationChannel()
+     Purpose: Required on Android 8.0+ to group notifications
+
+  6. BroadcastReceiver (android.content.BroadcastReceiver)
+     Used In: ReminderReceiver.java
+     Purpose: Receives AlarmManager broadcast → shows bill reminder notification
+
+  7. DatePickerDialog (android.app.DatePickerDialog)
+     Used In: AddExpenseActivity.showDatePicker()
+     Purpose: System date picker dialog for selecting expense date
+
+  8. ObjectAnimator + ValueAnimator (android.animation)
+     Used In: MainActivity.updateBudgetMeter()
+     Purpose: Smooth animation of the circular progress bar (0 → percent)
+
+  9. Intent + Activity Stack Management
+     Used In: All activities
+     Purpose: Navigate between screens; FLAG_ACTIVITY_CLEAR_TASK for login flow
+
+
+════════════════════════════════════════════════════════════════════════════
+  TESTING LIBRARIES (for automated tests only)
+════════════════════════════════════════════════════════════════════════════
+
+  JUnit 4                    → version 4.13.2
+    testImplementation libs.junit
+    Unit testing framework for Java. Used for running local JVM tests.
+
+  AndroidX Test JUnit        → version 1.3.0
+    androidTestImplementation libs.ext.junit
+    Extension of JUnit for Android instrumentation tests.
+
+  Espresso Core              → version 3.7.0
+    androidTestImplementation libs.espresso.core
+    UI testing framework. Simulates user interactions (clicks, typing)
+    and asserts UI state in automated tests.
+
+
+════════════════════════════════════════════════════════════════════════════
+  COMPLETE DEPENDENCY BLOCK (from app/build.gradle)
+════════════════════════════════════════════════════════════════════════════
+
+  dependencies {
+      implementation libs.appcompat          // androidx.appcompat:appcompat:1.7.1
+      implementation libs.material           // com.google.android.material:material:1.13.0
+      implementation libs.activity           // androidx.activity:activity:1.13.0
+      implementation libs.constraintlayout  // androidx.constraintlayout:constraintlayout:2.2.1
+      implementation libs.security.crypto   // androidx.security:security-crypto:1.0.0
+      implementation libs.recyclerview       // androidx.recyclerview:recyclerview:1.3.2
+      implementation libs.mpandroidchart    // com.github.PhilJay:MPAndroidChart:v3.1.0
+      implementation libs.opencsv           // com.opencsv:opencsv:5.9
+      implementation libs.work.runtime      // androidx.work:work-runtime:2.10.0
+
+      testImplementation libs.junit                        // junit:junit:4.13.2
+      androidTestImplementation libs.ext.junit             // androidx.test.ext:junit:1.3.0
+      androidTestImplementation libs.espresso.core         // androidx.test.espresso:espresso-core:3.7.0
+  }
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+  SECTION 8: QUICK PRESENTATION SUMMARY (For Oral Delivery)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+"Expenso is a personal finance Android app built in Java using SQLite for 
+persistent local storage. The app features:
+
+1. SECURE LOGIN: PIN-based authentication using AES256 encrypted storage.
+   Supports first-time PIN creation and returning user login.
+
+2. DASHBOARD: A real-time financial overview showing budget balance,
+   income vs spending, savings estimate, split bill summary,
+   budget health meter, daily balance trend chart, and recent transactions.
+
+3. EXPENSE TRACKING: Add expenses by category with date selection,
+   optional notes, and payment method. Supports quick bill splitting.
+
+4. BUDGET MANAGEMENT: Set a monthly budget limit. The dashboard meter
+   turns green, orange, or red based on how much you've used.
+
+5. REPORTS: Visual analytics with a Pie Chart (spending by category)
+   and Bar Chart (monthly trends) using the MPAndroidChart library.
+
+6. SPLIT BILLS: Split expenses equally or with custom amounts among
+   up to 4 people. Supports bidirectional tracking — whether YOU paid
+   or SOMEONE ELSE paid — with a Settle Up feature.
+
+7. SAVINGS GOALS: Create goals with a target amount and track progress
+   with a preview shown right on the dashboard.
+
+8. SMART NOTIFICATIONS: Budget warnings at 70%, 90%, 100% thresholds.
+   Context-aware alerts after each expense. Unusual spending detection
+   (if expense is 2× your average). Daily advice via background worker.
+
+9. SETTINGS: Language switching (English/Hindi), CSV data import,
+   bill reminders, PIN change, and profile management.
+
+The architecture follows DAO pattern (Data Access Object) separating
+database logic from UI. BaseActivity provides shared functionality
+(lock, language) to all screens. Data loads happen on background threads
+to keep the UI smooth and responsive."
+
+
+================================================================================
+  END OF DOCUMENTATION
+================================================================================

@@ -817,7 +817,7 @@ SMARTNOTIFICATIONMANAGER:
   checkAndTriggerSmartAlert()   Runs 3 alert checks after each expense:
                                 1. Context-aware alert: remaining budget
                                 2. Budget threshold alert: 70/90/100% warnings
-                                3. Unusual spending: if expense > 2× average
+            3. Unusual spending: if expense > 2× average
 
 REMINDERSWORKER (SmartRemindersWorker):
   doWork()                      Periodic job: checks budget usage; sends ≥90% reminder; sends daily safe-spend advice
